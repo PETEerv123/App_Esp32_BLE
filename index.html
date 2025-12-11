@@ -7,7 +7,7 @@
 <style>
 body { font-family: Arial; margin: 20px; }
 button { margin: 5px; padding: 10px; }
-#log { white-space: pre-line; padding: 10px; border: 1px solid #ccc; height: 200px; overflow-y: auto; }
+#dataArea { white-space: pre-line; padding: 10px; border: 1px solid #ccc; height: 200px; overflow-y: auto; }
 </style>
 </head>
 
@@ -34,17 +34,18 @@ button { margin: 5px; padding: 10px; }
 
 // UUIDs
 const SERVICE_UUID = "00000259-0000-1000-8000-00805f9b34fb";
-const CHAR_UUID    = "00002A37-0000-1000-8000-00805f9b34fb";
+const CHAR_UUID    = "00002a37-0000-1000-8000-00805f9b34fb";
 
 let device, server, service, characteristic;
 
 document.getElementById("scanBtn").onclick = async () => {
     try {
         device = await navigator.bluetooth.requestDevice({
-            filters: [{ services: [SERVICE_UUID] }],
+            acceptAllDevices: true,
+            optionalServices: [SERVICE_UUID]
         });
 
-        document.getElementById("deviceName").textContent = device.name;
+        document.getElementById("deviceName").textContent = device.name || "No name";
         document.getElementById("status").textContent = "Connecting...";
         document.getElementById("deviceId").textContent = device.id;
 
