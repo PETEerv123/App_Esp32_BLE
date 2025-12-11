@@ -1,41 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Web BLE Scanner</title>
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-
+<meta charset="utf-8">
+<title>Web BLE ECG</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico" />
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f7f7f7;
-        padding: 20px;
-    }
-    h2 { color: #3f51b5; }
-    button {
-        padding: 10px 16px;
-        margin: 5px;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 8px;
-    }
-    #scanBtn { background: #2ecc71; color:white; }
-    #disconnectBtn { background: #e74c3c; color:white; }
-
-    ul {
-        background: white;
-        padding: 10px;
-        border-radius: 10px;
-        list-style: none;
-    }
-    li {
-        padding: 8px;
-        border-bottom: 1px solid #ddd;
-        cursor: pointer;
-    }
-    li:hover { background: #eef; }
-    
-    .label { font-weight: bold; }
+body { font-family: Arial; margin: 20px; }
+button { margin: 5px; padding: 10px; }
+#log { white-space: pre-line; padding: 10px; border: 1px solid #ccc; height: 200px; overflow-y: auto; }
 </style>
 </head>
 
@@ -47,114 +19,66 @@
 <button id="disconnectBtn" disabled>Disconnect</button>
 
 <h3>📡 Scan result:</h3>
-<ul id="deviceList"></ul>
+<div id="deviceName">None</div>
 
 <h3>🔧 Connection Info:</h3>
-<p><span class="label">Status:</span> <span id="status">Disconnected</span></p>
-<p><span class="label">Device Name:</span> <span id="devName">None</span></p>
-<p><span class="label">Device ID:</span> <span id="devId">None</span></p>
-<p><span class="label">Service UUID:</span> <span id="serviceUUID">None</span></p>
-<p><span class="label">Characteristic UUID:</span> <span id="charUUID">None</span></p>
+<div>Status: <span id="status">Disconnected</span></div>
+<div>Device ID: <span id="deviceId">None</span></div>
+<div>Service UUID: <span id="serviceUUID">None</span></div>
+<div>Characteristic UUID: <span id="charUUID">None</span></div>
 
-<h3>📥 Characteristic Receive:</h3>
-<pre id="receivedData" style="background:#fff;padding:10px;border-radius:8px;">No data...</pre>
+<h3>📥 Received Data:</h3>
+<div id="dataArea">No data...</div>
 
 <script>
 
-let device = null;
-let server = null;
-let characteristic = null;
+// UUIDs
+const SERVICE_UUID = "00000259-0000-1000-8000-00805f9b34fb";
+const CHAR_UUID    = "00002A37-0000-1000-8000-00805f9b34fb";
+
+let device, server, service, characteristic;
 
 document.getElementById("scanBtn").onclick = async () => {
     try {
-        const devList = document.getElementById("deviceList");
-        devList.innerHTML = ""; 
-
-        console.log("Requesting Bluetooth devices...");
         device = await navigator.bluetooth.requestDevice({
-            acceptAllDevices: true,
-            optionalServices: ["battery_service", "device_information"] // quét tất cả
+            filters: [{ services: [SERVICE_UUID] }],
         });
 
-        // hiển thị 1 thiết bị → click là connect luôn
-        const li = document.createElement("li");
-        li.textContent = device.name || "Unknown Device";
-        li.onclick = () => connectToDevice(device);
-        devList.appendChild(li);
+        document.getElementById("deviceName").textContent = device.name;
+        document.getElementById("status").textContent = "Connecting...";
+        document.getElementById("deviceId").textContent = device.id;
 
-    } catch (err) {
-        alert("Error: " + err);
-    }
-};
-
-async function connectToDevice(device) {
-    try {
-        updateStatus("Connecting...");
+        device.addEventListener("gattserverdisconnected", () => {
+            document.getElementById("status").textContent = "Disconnected";
+        });
 
         server = await device.gatt.connect();
-        updateStatus("Connected");
+        document.getElementById("status").textContent = "Connected";
 
-        document.getElementById("devName").innerText = device.name || "Unknown";
-        document.getElementById("devId").innerText = device.id;
+        service = await server.getPrimaryService(SERVICE_UUID);
+        characteristic = await service.getCharacteristic(CHAR_UUID);
+
+        document.getElementById("serviceUUID").textContent = SERVICE_UUID;
+        document.getElementById("charUUID").textContent = CHAR_UUID;
+
+        await characteristic.startNotifications();
+        characteristic.addEventListener("characteristicvaluechanged", e => {
+            const v = e.target.value;
+            let hr = v.getUint8(1);
+            document.getElementById("dataArea").textContent = "HR: " + hr;
+        });
 
         document.getElementById("disconnectBtn").disabled = false;
 
-        // Lấy service
-        const services = await server.getPrimaryServices();
-        if (services.length === 0) {
-            alert("No services found!");
-            return;
-        }
-
-        let service = services[0];
-        document.getElementById("serviceUUID").innerText = service.uuid;
-
-        // Lấy characteristic đầu tiên
-        const characteristics = await service.getCharacteristics();
-        characteristic = characteristics[0];
-
-        document.getElementById("charUUID").innerText = characteristic.uuid;
-
-        // kích hoạt Notify nếu có
-        try {
-            await characteristic.startNotifications();
-            characteristic.addEventListener("characteristicvaluechanged", onNotification);
-        } catch (e) {
-            console.log("Notify not supported");
-        }
-
-        // đọc 1 lần
-        const value = await characteristic.readValue();
-        parseValue(value);
-
-    } catch (err) {
-        alert("Connection error:\n" + err);
-        updateStatus("Disconnected");
+    } catch (e) {
+        alert("Error: " + e);
     }
-}
-
-function onNotification(event) {
-    const value = event.target.value;
-    parseValue(value);
-}
-
-function parseValue(dataView) {
-    let text = "";
-    for (let i = 0; i < dataView.byteLength; i++) {
-        text += dataView.getUint8(i).toString(16).padStart(2, "0") + " ";
-    }
-    document.getElementById("receivedData").innerText = text;
-}
-
-document.getElementById("disconnectBtn").onclick = () => {
-    if (!device) return;
-    device.gatt.disconnect();
-    updateStatus("Disconnected");
 };
 
-function updateStatus(msg) {
-    document.getElementById("status").innerText = msg;
-}
+document.getElementById("disconnectBtn").onclick = () => {
+    if (device && device.gatt.connected) device.gatt.disconnect();
+    document.getElementById("status").textContent = "Disconnected";
+};
 
 </script>
 </body>
