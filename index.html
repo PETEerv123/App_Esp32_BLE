@@ -443,7 +443,7 @@
         </section>
 
         <!-- Data Log -->
-        <section class="data-log-container">
+        <!-- <section class="data-log-container">
             <div class="log-title">📊 Data Stream Log</div>
             <div id="dataArea">
                 <div class="log-entry">
@@ -451,7 +451,7 @@
                     <div class="log-data">Waiting for BLE connection...</div>
                 </div>
             </div>
-        </section>
+        </section> -->
     </div>
 
     <script>
@@ -565,13 +565,14 @@
             // Update real-time values
             hrValue.textContent = hr;
             batValue.textContent = battery;
-            ecgValue.textContent = sample;
+            // ecgValue.textContent = sample;
             
             // Redraw ECG waveform
             drawECGWaveform();
             
             // Update data log
-            updateDataLog(sample, hr, battery);
+            // updateDataLog(sample, hr, battery);
+            updateDataLog( hr, battery);
         }
         
         // Draw ECG waveform
@@ -582,7 +583,7 @@
             drawGrid();
             
             const centerY = canvas.height / 2;
-            const scale = 0.08; // Scale factor for ECG values
+            const scale = 0.001; // Scale factor for ECG values
             const timeScale = 2; // Pixels per ms
             
             // Draw ECG line with gradient
@@ -619,22 +620,21 @@
         }
         
         // Update data log
-        function updateDataLog(sample, hr, battery) {
+        //  function updateDataLog(sample, hr, battery) {
+        function updateDataLog(hr, battery) {
             const time = new Date().toLocaleTimeString([], { 
                 hour: '2-digit', 
                 minute: '2-digit',
                 second: '2-digit'
             });
-            
+            //                <div class="log-data">HR: ${hr} bpm | Battery: ${battery}% | ECG: ${sample} μV</div>
             const logEntry = document.createElement('div');
             logEntry.className = 'log-entry';
             logEntry.innerHTML = `
                 <div class="timestamp">[${time}]</div>
-                <div class="log-data">HR: ${hr} bpm | Battery: ${battery}% | ECG: ${sample} μV</div>
+                <div class="log-data">HR: ${hr} bpm | Battery: ${battery}% </div>
             `;
-            
             dataArea.insertBefore(logEntry, dataArea.firstChild);
-            
             // Keep only last 20 entries
             const entries = dataArea.querySelectorAll('.log-entry');
             if (entries.length > 20) {
