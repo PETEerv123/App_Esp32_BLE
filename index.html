@@ -1,398 +1,840 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Web BLE ECG Monitor</title>
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<style>
-* { box-sizing: border-box; }
-body { 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    margin: 20px; 
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    min-height: 100vh;
-    padding: 20px;
-}
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-h2, h3 { 
-    color: white; 
-    text-align: center;
-    margin-bottom: 20px;
-}
-h2 { font-size: 2.2em; margin-top: 0; }
-h3 { font-size: 1.4em; border-bottom: 2px solid rgba(255, 255, 255, 0.3); padding-bottom: 10px; }
-button { 
-    margin: 10px; 
-    padding: 15px 30px; 
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-button:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
-button:active { transform: translateY(1px); }
-#scanBtn { 
-    background: linear-gradient(45deg, #4CAF50, #2E7D32);
-    color: white;
-}
-#disconnectBtn { 
-    background: linear-gradient(45deg, #F44336, #C62828);
-    color: white;
-}
-#disconnectBtn:disabled {
-    background: #666;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-.buttons {
-    text-align: center;
-    margin: 30px 0;
-}
-.info-box {
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 15px;
-    padding: 20px;
-    margin: 15px 0;
-    transition: all 0.3s;
-}
-.info-box:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-}
-.info-label {
-    font-weight: bold;
-    color: #ffcc00;
-    display: inline-block;
-    width: 180px;
-}
-.info-value {
-    font-family: 'Courier New', monospace;
-    word-break: break-all;
-}
-.status-indicator {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin-right: 10px;
-    vertical-align: middle;
-}
-.connected { background-color: #4CAF50; box-shadow: 0 0 10px #4CAF50; }
-.disconnected { background-color: #F44336; box-shadow: 0 0 10px #F44336; }
-.connecting { background-color: #FF9800; box-shadow: 0 0 10px #FF9800; animation: pulse 1s infinite; }
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-}
-#dataArea {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    padding: 20px;
-    height: 300px;
-    overflow-y: auto;
-    font-family: 'Courier New', monospace;
-    white-space: pre-wrap;
-    margin-top: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-#ecgChart {
-    width: 100%;
-    height: 300px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    margin-top: 20px;
-}
-.data-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-}
-.heart-rate {
-    font-size: 2.5em;
-    font-weight: bold;
-    color: #ff4444;
-    text-align: center;
-    margin: 20px 0;
-    animation: heartbeat 1.5s ease-in-out infinite;
-}
-@keyframes heartbeat {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-.battery {
-    display: inline-block;
-    padding: 5px 15px;
-    background: linear-gradient(45deg, #4CAF50, #2E7D32);
-    border-radius: 20px;
-    font-weight: bold;
-}
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time ECG Monitor</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        :root {
+            --primary-blue: #0a1f53;
+            --secondary-blue: #1a3b8b;
+            --accent-red: #e53935;
+            --accent-green: #2ac145;
+            --light-gray: #f5f7fa;
+            --medium-gray: #e3e2df;
+            --text-dark: #333333;
+            --text-light: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            grid-template-rows: auto auto 1fr;
+            gap: 20px;
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: var(--primary-blue);
+            color: var(--text-light);
+            padding: 25px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(10, 31, 83, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-title h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .header-title h1 span {
+            color: var(--accent-red);
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .pulse-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(42, 193, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(42, 193, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(42, 193, 69, 0); }
+        }
+
+        /* Control Panel */
+        .control-panel {
+            grid-column: 1;
+            grid-row: 2;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .panel-title h2 {
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        .device-info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-card {
+            background: var(--light-gray);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary-blue);
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            color: var(--primary-blue);
+            word-break: break-all;
+        }
+
+        /* Connection Buttons */
+        .connection-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 14px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .btn-scan {
+            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+            color: white;
+        }
+
+        .btn-disconnect {
+            background: linear-gradient(135deg, #ff6b6b, var(--accent-red));
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Vital Stats */
+        .vital-stats {
+            grid-column: 2;
+            grid-row: 2;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--accent-red);
+            line-height: 1;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* ECG Chart */
+        .ecg-chart-container {
+            grid-column: 1 / -1;
+            grid-row: 3;
+            background: var(--primary-blue);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(10, 31, 83, 0.3);
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .chart-title {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .chart-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .chart-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        #ecgCanvas {
+            width: 100%;
+            height: 350px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        /* Data Log */
+        .data-log-container {
+            grid-column: 1;
+            grid-row: 4;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-top: 20px;
+        }
+
+        .log-title {
+            font-size: 1.3rem;
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #dataArea {
+            height: 200px;
+            overflow-y: auto;
+            background: var(--light-gray);
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .log-entry {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .timestamp {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .log-data {
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            .vital-stats {
+                grid-column: 1;
+                grid-row: 3;
+            }
+            .ecg-chart-container {
+                grid-row: 4;
+            }
+            .data-log-container {
+                grid-row: 5;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .vital-stats {
+                grid-template-columns: 1fr;
+            }
+            .connection-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 
 <body>
-<div class="container">
-    <h2>❤️ Web BLE ECG Monitor</h2>
-    
-    <div class="buttons">
-        <button id="scanBtn">
-            <span style="margin-right: 8px;">🔍</span> SCAN BLE DEVICES
-        </button>
-        <button id="disconnectBtn" disabled>
-            <span style="margin-right: 8px;">❌</span> DISCONNECT
-        </button>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-title">
+                <h1>❤️ <span>Real-time</span> ECG Monitor</h1>
+                <div class="live-indicator">
+                    <div class="pulse-dot"></div>
+                    <span id="connectionStatusText">Ready to Connect</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Control Panel with Device Info -->
+        <section class="control-panel">
+            <div class="panel-title">
+                <h2>📱 Device Control & Information</h2>
+            </div>
+            
+            <div class="device-info-grid">
+                <div class="info-card">
+                    <div class="info-label">Device Name</div>
+                    <div class="info-value" id="deviceName">Not Connected</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Device ID / MAC Address</div>
+                    <div class="info-value" id="deviceId">--:--:--:--:--:--</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Service UUID</div>
+                    <div class="info-value" id="serviceUUID">0x0259 (Heart Rate Service)</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Characteristic UUID</div>
+                    <div class="info-value" id="charUUID">0x2A37 (Heart Rate Measurement)</div>
+                </div>
+            </div>
+
+            <div class="connection-buttons">
+                <button class="btn btn-scan" id="scanBtn">
+                    🔍 SCAN BLE DEVICE
+                </button>
+                <button class="btn btn-disconnect" id="disconnectBtn" disabled>
+                    ✖️ DISCONNECT
+                </button>
+            </div>
+        </section>
+
+        <!-- Vital Stats -->
+        <section class="vital-stats">
+            <div class="stat-card">
+                <div class="stat-label">Heart Rate</div>
+                <div class="stat-value" id="hrValue">--</div>
+                <div class="stat-unit">bpm</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Battery Level</div>
+                <div class="stat-value" id="batValue">--</div>
+                <div class="stat-unit">%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">ECG Value</div>
+                <div class="stat-value" id="ecgValue">--</div>
+                <div class="stat-unit">μV</div>
+            </div>
+        </section>
+
+        <!-- ECG Chart -->
+        <section class="ecg-chart-container">
+            <div class="chart-header">
+                <div class="chart-title">📈 Live ECG Signal</div>
+                <div class="chart-controls">
+                    <button class="chart-btn" id="clearChartBtn">Clear Chart</button>
+                    <button class="chart-btn" id="exportBtn">Export Data</button>
+                </div>
+            </div>
+            <canvas id="ecgCanvas"></canvas>
+        </section>
+
+        <!-- Data Log -->
+        <section class="data-log-container">
+            <div class="log-title">📊 Data Stream Log</div>
+            <div id="dataArea">
+                <div class="log-entry">
+                    <div class="timestamp">[System]</div>
+                    <div class="log-data">Waiting for BLE connection...</div>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <h3>📡 Device Information</h3>
-    <div class="info-box">
-        <div class="data-row">
-            <span class="info-label">Status:</span>
-            <span class="info-value">
-                <span id="statusIndicator" class="status-indicator disconnected"></span>
-                <span id="statusText">Disconnected</span>
-            </span>
-        </div>
-        <div class="data-row">
-            <span class="info-label">Device Name:</span>
-            <span class="info-value" id="deviceName">Not connected</span>
-        </div>
-        <div class="data-row">
-            <span class="info-label">Device ID:</span>
-            <span class="info-value" id="deviceId">-</span>
-        </div>
-        <div class="data-row">
-            <span class="info-label">Service UUID:</span>
-            <span class="info-value" id="serviceUUID">0x0259 (Heart Rate)</span>
-        </div>
-        <div class="data-row">
-            <span class="info-label">Characteristic UUID:</span>
-            <span class="info-value" id="charUUID">0x2A37 (Heart Rate Measurement)</span>
-        </div>
-    </div>
+    <script>
+        // Constants
+        const SERVICE_UUID = 0x0259;  // Heart Rate Service (16-bit)[citation:9]
+        const CHAR_UUID = 0x2A37;     // Heart Rate Measurement Characteristic (16-bit)[citation:9]
 
-    <h3>💓 Real-time Data</h3>
-    <div class="info-box">
-        <div class="heart-rate" id="heartRateDisplay">--</div>
-        <div class="data-row">
-            <span class="info-label">Battery Level:</span>
-            <span class="info-value"><span class="battery" id="batteryLevel">--%</span></span>
-        </div>
-        <div class="data-row">
-            <span class="info-label">RR Interval:</span>
-            <span class="info-value" id="rrInterval">-- ms</span>
-        </div>
-        <div class="data-row">
-            <span class="info-label">Accelerometer:</span>
-            <span class="info-value" id="accelValue">-- g</span>
-        </div>
-        <div class="data-row">
-            <span class="info-label">Samples Received:</span>
-            <span class="info-value" id="sampleCount">0</span>
-        </div>
-    </div>
+        // Global variables
+        let device = null;
+        let server = null;
+        let service = null;
+        let characteristic = null;
+        let ecgData = [];
+        const MAX_DATA_POINTS = 300;
+        let canvas, ctx;
+        let isConnected = false;
 
-    <h3>📊 ECG Data Stream</h3>
-    <div id="dataArea">Waiting for ECG data...</div>
-
-    <!-- Canvas for ECG Chart (optional) -->
-    <canvas id="ecgChart"></canvas>
-</div>
-
-<script>
-// UUID Configuration
-const SERVICE_UUID = 0x0259;           // 16-bit Heart Rate Service UUID
-const CHAR_UUID = 0x2A37;              // 16-bit Heart Rate Measurement Characteristic
-
-// Global variables
-let device = null;
-let server = null;
-let service = null;
-let characteristic = null;
-let sampleCounter = 0;
-let ecgData = [];
-
-// DOM Elements
-const statusIndicator = document.getElementById('statusIndicator');
-const statusText = document.getElementById('statusText');
-const deviceName = document.getElementById('deviceName');
-const deviceId = document.getElementById('deviceId');
-const heartRateDisplay = document.getElementById('heartRateDisplay');
-const batteryLevel = document.getElementById('batteryLevel');
-const rrInterval = document.getElementById('rrInterval');
-const accelValue = document.getElementById('accelValue');
-const sampleCount = document.getElementById('sampleCount');
-const dataArea = document.getElementById('dataArea');
-const scanBtn = document.getElementById('scanBtn');
-const disconnectBtn = document.getElementById('disconnectBtn');
-
-// Update status display
-function updateStatus(status, isConnected = false) {
-    statusText.textContent = status;
-    statusIndicator.className = 'status-indicator ' + 
-        (isConnected ? 'connected' : (status === 'Connecting...' ? 'connecting' : 'disconnected'));
-}
-
-// Parse ECG data from BLE notification
-function parseECGData(dataView) {
-    try {
-        let offset = 0;
+        // DOM Elements
+        const scanBtn = document.getElementById('scanBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const clearChartBtn = document.getElementById('clearChartBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const connectionStatusText = document.getElementById('connectionStatusText');
+        const deviceName = document.getElementById('deviceName');
+        const deviceId = document.getElementById('deviceId');
+        const serviceUUID = document.getElementById('serviceUUID');
+        const charUUID = document.getElementById('charUUID');
+        const hrValue = document.getElementById('hrValue');
+        const batValue = document.getElementById('batValue');
+        const ecgValue = document.getElementById('ecgValue');
+        const dataArea = document.getElementById('dataArea');
         
-        // Heart Rate (2 bytes, little-endian)
-        const hr = dataView.getUint16(offset, true);
-        offset += 2;
-        
-        // RR Interval (2 bytes, little-endian)
-        const rr = dataView.getUint16(offset, true);
-        offset += 2;
-        
-        // Battery Level (1 byte)
-        const battery = dataView.getUint8(offset);
-        offset += 1;
-        
-        // Accelerometer (2 bytes, little-endian)
-        const accel = dataView.getUint16(offset, true) / 1000.0;
-        offset += 2;
-        
-        // ECG Samples (rest of the data, each sample 4 bytes)
-        const ecgSamples = [];
-        const numSamples = (dataView.byteLength - offset) / 4;
-        
-        for (let i = 0; i < numSamples; i++) {
-            const sample = dataView.getInt32(offset, true);
-            ecgSamples.push(sample);
-            offset += 4;
+        // Initialize Canvas
+        function initCanvas() {
+            canvas = document.getElementById('ecgCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Set canvas dimensions
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            // Draw initial grid
+            drawGrid();
         }
         
-        return {
-            heartRate: hr,
-            rrInterval: rr,
-            battery: battery,
-            accelerometer: accel,
-            ecgSamples: ecgSamples,
-            timestamp: new Date().toLocaleTimeString()
-        };
-    } catch (error) {
-        console.error('Error parsing ECG data:', error);
-        return null;
-    }
-}
-
-// Display ECG data
-function displayECGData(ecgData) {
-    // Update real-time values
-    heartRateDisplay.textContent = ecgData.heartRate;
-    batteryLevel.textContent = ecgData.battery + '%';
-    rrInterval.textContent = ecgData.rrInterval + ' ms';
-    accelValue.textContent = ecgData.accelerometer.toFixed(3) + ' g';
-    
-    // Update sample counter
-    sampleCounter += ecgData.ecgSamples.length;
-    sampleCount.textContent = sampleCounter;
-    
-    // Display raw data
-    const dataStr = `[${ecgData.timestamp}] HR: ${ecgData.heartRate} bpm | RR: ${ecgData.rrInterval} ms | Battery: ${ecgData.battery}% | Accel: ${ecgData.accelerometer.toFixed(3)} g\n` +
-                   `ECG Samples: ${ecgData.ecgSamples.length} samples\n` +
-                   `First sample: ${ecgData.ecgSamples[0]}, Last: ${ecgData.ecgSamples[ecgData.ecgSamples.length-1]}\n` +
-                   '─'.repeat(50) + '\n';
-    
-    dataArea.textContent = dataStr + dataArea.textContent;
-    
-    // Keep only last 20 entries
-    const lines = dataArea.textContent.split('\n');
-    if (lines.length > 100) {
-        dataArea.textContent = lines.slice(0, 100).join('\n');
-    }
-}
-
-// Handle BLE connection
-scanBtn.onclick = async () => {
-    try {
-        updateStatus('Scanning...');
-        
-        // Request BLE device
-        device = await navigator.bluetooth.requestDevice({
-            filters: [
-                { name: 'ECG Device' },  // Filter by device name
-                { services: [SERVICE_UUID] }  // Filter by service UUID
-            ],
-            optionalServices: [SERVICE_UUID]
-        });
-        
-        deviceName.textContent = device.name || 'Unknown Device';
-        deviceId.textContent = device.id;
-        updateStatus('Connecting...');
-        
-        // Handle disconnection
-        device.addEventListener('gattserverdisconnected', () => {
-            updateStatus('Disconnected');
-            disconnectBtn.disabled = true;
-            scanBtn.disabled = false;
-        });
-        
-        // Connect to GATT server
-        server = await device.gatt.connect();
-        updateStatus('Connected', true);
-        
-        // Get service
-        service = await server.getPrimaryService(SERVICE_UUID);
-        
-        // Get characteristic
-        characteristic = await service.getCharacteristic(CHAR_UUID);
-        
-        // Start notifications
-        await characteristic.startNotifications();
-        
-        // Handle incoming data
-        characteristic.addEventListener('characteristicvaluechanged', event => {
-            const value = event.target.value;
-            const ecgData = parseECGData(value);
+        // Draw ECG grid
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            if (ecgData) {
-                displayECGData(ecgData);
+            // Background
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Vertical lines (every 50px = 250ms at 200px/sec)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 1;
+            
+            for (let x = 0; x < canvas.width; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
             }
-        });
+            
+            // Horizontal lines
+            for (let y = 0; y < canvas.height; y += 25) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Center line
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+        }
         
-        // Enable disconnect button
-        disconnectBtn.disabled = false;
-        scanBtn.disabled = true;
+        // Update device information display
+        function updateDeviceInfo(deviceObj) {
+            deviceName.textContent = deviceObj.name || 'Unnamed Device';
+            
+            // Display device ID (or MAC address if available)
+            if (deviceObj.id) {
+                deviceId.textContent = deviceObj.id;
+            }
+            
+            // Update connection status
+            connectionStatusText.textContent = 'Connected';
+            connectionStatusText.style.color = '#2ac145';
+        }
         
-    } catch (error) {
-        updateStatus('Error: ' + error.message);
-        console.error('Bluetooth error:', error);
-    }
-};
-
-// Handle disconnection
-disconnectBtn.onclick = () => {
-    if (device && device.gatt.connected) {
-        device.gatt.disconnect();
-    }
-    updateStatus('Disconnected');
-    disconnectBtn.disabled = true;
-    scanBtn.disabled = false;
-};
-
-// Initialize
-updateStatus('Disconnected');
-</script>
+        // Plot ECG point
+        function plotECGPoint(sample, hr, battery) {
+            // Add new data point
+            ecgData.push({
+                sample: sample,
+                hr: hr,
+                battery: battery,
+                timestamp: Date.now()
+            });
+            
+            // Keep only last MAX_DATA_POINTS
+            if (ecgData.length > MAX_DATA_POINTS) {
+                ecgData.shift();
+            }
+            
+            // Update real-time values
+            hrValue.textContent = hr;
+            batValue.textContent = battery;
+            ecgValue.textContent = sample;
+            
+            // Redraw ECG waveform
+            drawECGWaveform();
+            
+            // Update data log
+            updateDataLog(sample, hr, battery);
+        }
+        
+        // Draw ECG waveform
+        function drawECGWaveform() {
+            if (ecgData.length < 2) return;
+            
+            // Clear and redraw grid
+            drawGrid();
+            
+            const centerY = canvas.height / 2;
+            const scale = 0.08; // Scale factor for ECG values
+            const timeScale = 2; // Pixels per ms
+            
+            // Draw ECG line with gradient
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient.addColorStop(0, '#ff6b6b');
+            gradient.addColorStop(0.5, '#e53935');
+            gradient.addColorStop(1, '#c62828');
+            
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 2;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            
+            // Start from right (newest data)
+            const startX = canvas.width;
+            let x = startX;
+            
+            for (let i = ecgData.length - 1; i >= 0; i--) {
+                const y = centerY - (ecgData[i].sample * scale);
+                
+                if (i === ecgData.length - 1) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+                
+                x -= timeScale * 20; // 20ms per sample
+                
+                if (x < 0) break;
+            }
+            
+            ctx.stroke();
+        }
+        
+        // Update data log
+        function updateDataLog(sample, hr, battery) {
+            const time = new Date().toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <div class="timestamp">[${time}]</div>
+                <div class="log-data">HR: ${hr} bpm | Battery: ${battery}% | ECG: ${sample} μV</div>
+            `;
+            
+            dataArea.insertBefore(logEntry, dataArea.firstChild);
+            
+            // Keep only last 20 entries
+            const entries = dataArea.querySelectorAll('.log-entry');
+            if (entries.length > 20) {
+                dataArea.removeChild(entries[entries.length - 1]);
+            }
+        }
+        
+        // Parse incoming BLE data
+        function parseECGData(dataView) {
+            let offset = 0;
+            
+            // Heart Rate (2 bytes, little-endian)
+            const hr = dataView.getUint16(offset, true);
+            offset += 2;
+            
+            // RR Interval (2 bytes, little-endian)
+            const rr = dataView.getUint16(offset, true);
+            offset += 2;
+            
+            // Battery Level (1 byte)
+            const battery = dataView.getUint8(offset);
+            offset += 1;
+            
+            // Accelerometer (2 bytes, little-endian)
+            const accel = dataView.getUint16(offset, true) / 1000.0;
+            offset += 2;
+            
+            // ECG Sample (4 bytes, little-endian)
+            const ecgSample = dataView.getInt32(offset, true);
+            
+            return {
+                heartRate: hr,
+                rrInterval: rr,
+                battery: battery,
+                accelerometer: accel,
+                ecgSample: ecgSample,
+                timestamp: Date.now()
+            };
+        }
+        
+        // Connect to BLE device
+        scanBtn.onclick = async () => {
+            try {
+                updateStatus('Scanning for devices...', 'scanning');
+                
+                // Request BLE device connection[citation:2]
+                device = await navigator.bluetooth.requestDevice({
+                    filters: [{ name: 'ECG Device' }],
+                    optionalServices: [SERVICE_UUID]
+                });
+                
+                // Update device info display
+                updateDeviceInfo(device);
+                updateStatus('Connecting...', 'connecting');
+                
+                // Handle disconnection
+                device.addEventListener('gattserverdisconnected', () => {
+                    updateStatus('Disconnected', 'disconnected');
+                    isConnected = false;
+                    scanBtn.disabled = false;
+                    disconnectBtn.disabled = true;
+                    
+                    dataArea.innerHTML = `<div class="log-entry">
+                        <div class="timestamp">[System]</div>
+                        <div class="log-data">Device disconnected</div>
+                    </div>` + dataArea.innerHTML;
+                });
+                
+                // Connect to GATT server
+                server = await device.gatt.connect();
+                updateStatus('Connected', 'connected');
+                isConnected = true;
+                
+                // Get primary service[citation:1][citation:9]
+                service = await server.getPrimaryService(SERVICE_UUID);
+                
+                // Get characteristic
+                characteristic = await service.getCharacteristic(CHAR_UUID);
+                
+                // Start notifications (server pushes data)[citation:9]
+                await characteristic.startNotifications();
+                
+                // Handle incoming data
+                characteristic.addEventListener('characteristicvaluechanged', event => {
+                    const value = event.target.value;
+                    const parsedData = parseECGData(value);
+                    
+                    if (parsedData) {
+                        plotECGPoint(parsedData.ecgSample, parsedData.heartRate, parsedData.battery);
+                    }
+                });
+                
+                // Enable/disable buttons
+                scanBtn.disabled = true;
+                disconnectBtn.disabled = false;
+                
+                // Log connection success
+                dataArea.innerHTML = `<div class="log-entry">
+                    <div class="timestamp">[System]</div>
+                    <div class="log-data">Connected to ${device.name || 'ECG Device'}</div>
+                </div>` + dataArea.innerHTML;
+                
+            } catch (error) {
+                updateStatus('Connection Failed', 'error');
+                alert(`Error: ${error.message}`);
+                console.error('Bluetooth error:', error);
+            }
+        };
+        
+        // Disconnect from device
+        disconnectBtn.onclick = () => {
+            if (device && device.gatt.connected) {
+                device.gatt.disconnect();
+            }
+            updateStatus('Disconnected', 'disconnected');
+            scanBtn.disabled = false;
+            disconnectBtn.disabled = true;
+        };
+        
+        // Clear chart
+        clearChartBtn.onclick = () => {
+            ecgData = [];
+            drawGrid();
+            dataArea.innerHTML = `<div class="log-entry">
+                <div class="timestamp">[System]</div>
+                <div class="log-data">Chart cleared</div>
+            </div>`;
+        };
+        
+        // Export data
+        exportBtn.onclick = () => {
+            if (ecgData.length === 0) {
+                alert('No data to export');
+                return;
+            }
+            
+            // Create CSV content
+            let csvContent = "Timestamp,Heart Rate (bpm),Battery (%),ECG Value (μV)\n";
+            
+            ecgData.forEach(point => {
+                const time = new Date(point.timestamp).toLocaleTimeString();
+                csvContent += `${time},${point.hr},${point.battery},${point.sample}\n`;
+            });
+            
+            // Create download link
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ecg_data_${new Date().toISOString().slice(0,10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            dataArea.innerHTML = `<div class="log-entry">
+                <div class="timestamp">[System]</div>
+                <div class="log-data">Data exported (${ecgData.length} samples)</div>
+            </div>` + dataArea.innerHTML;
+        };
+        
+        // Update connection status
+        function updateStatus(message, status) {
+            connectionStatusText.textContent = message;
+            
+            const dot = document.querySelector('.pulse-dot');
+            switch(status) {
+                case 'connected':
+                    dot.style.backgroundColor = '#2ac145';
+                    connectionStatusText.style.color = '#2ac145';
+                    break;
+                case 'scanning':
+                case 'connecting':
+                    dot.style.backgroundColor = '#ff9800';
+                    connectionStatusText.style.color = '#ff9800';
+                    break;
+                case 'disconnected':
+                    dot.style.backgroundColor = '#e53935';
+                    connectionStatusText.style.color = '#e53935';
+                    break;
+                case 'error':
+                    dot.style.backgroundColor = '#e53935';
+                    connectionStatusText.style.color = '#e53935';
+                    break;
+            }
+        }
+        
+        // Initialize on load
+        window.onload = () => {
+            initCanvas();
+            updateStatus('Ready to Connect', 'disconnected');
+            
+            // Handle window resize
+            window.onresize = () => {
+                initCanvas();
+                if (ecgData.length > 0) {
+                    drawECGWaveform();
+                }
+            };
+        };
+    </script>
 </body>
 </html>
