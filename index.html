@@ -719,9 +719,14 @@
     </div>
 
     <script>
-        // Constants - Sửa UUID thành tiêu chuẩn BLE hoặc để trống để scan tất cả
-        const SERVICE_UUID = '0x259';  // UUID custom của bạn
-        const CHAR_UUID = '0x2A37';     // Heart Rate Measurement Characteristic
+        // Constants - Sửa UUID thành đúng định dạng
+        // Cách 1: Sử dụng UUID đầy đủ 128-bit (recommended)
+        const SERVICE_UUID = '00000259-0000-1000-8000-00805f9b34fb';
+        const CHAR_UUID = '00002a37-0000-1000-8000-00805f9b34fb';
+        
+        // Cách 2: Hoặc sử dụng 16-bit UUID với tiền tố đúng
+        // const SERVICE_UUID = '0259';
+        // const CHAR_UUID = '2a37';
 
         // Global variables
         let device = null;
@@ -734,8 +739,6 @@
         let isConnected = false;
         let isPaused = false;
         let autoScroll = true;
-        let devices = [];
-        let scanInProgress = false;
 
         // DOM Elements
         const scanBtn = document.getElementById('scanBtn');
@@ -755,10 +758,6 @@
         const batValue = document.getElementById('batValue');
         const accelValue = document.getElementById('accelValue');
         const dataArea = document.getElementById('dataArea');
-        const deviceModal = document.getElementById('deviceModal');
-        const deviceList = document.getElementById('deviceList');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const refreshDevicesBtn = document.getElementById('refreshDevicesBtn');
         
         // Initialize Canvas
         function initCanvas() {
@@ -816,13 +815,9 @@
         }
         
         // Update device information display
-        function updateDeviceInfo(deviceObj, rssi = null) {
+        function updateDeviceInfo(deviceObj) {
             deviceName.textContent = deviceObj.name || 'ECG Device';
             deviceId.textContent = deviceObj.id || '--:--:--:--:--:--';
-            
-            if (rssi !== null) {
-                signalStrength.textContent = `${rssi} dBm`;
-            }
             
             // Update connection status
             connectionStatusText.textContent = 'Connected';
@@ -830,8 +825,8 @@
         }
         
         // Update battery display
-        function updateBatteryDisplay(batteryLevel) {
-            const batteryPercentValue = Math.min(Math.max(batteryLevel, 0), 100);
+        function updateBatteryDisplay(batteryLevelValue) {
+            const batteryPercentValue = Math.min(Math.max(batteryLevelValue, 0), 100);
             batValue.textContent = batteryPercentValue;
             batteryPercent.textContent = `${batteryPercentValue}%`;
             
@@ -871,10 +866,10 @@
                 offset += 2;
                 
                 // 5. ECG samples (50 samples * 4 bytes each = 200 bytes)
-                const ecgSamples = [];
+                const ecgSamplesArray = [];
                 for (let i = 0; i < 50; i++) {
                     const sample = dataView.getInt32(offset, true);
-                    ecgSamples.push(sample);
+                    ecgSamplesArray.push(sample);
                     offset += 4;
                 }
                 
@@ -883,11 +878,11 @@
                     rrInterval: rr,
                     battery: battery,
                     accelerometer: accel / 1000.0,
-                    ecgSamples: ecgSamples,
+                    ecgSamples: ecgSamplesArray,
                     timestamp: Date.now()
                 };
             } catch (error) {
-                console.error('Error parsing ECG data:', error);
+                console.error('Error parsing ECG data:', error, 'DataView length:', dataView.byteLength);
                 return null;
             }
         }
@@ -933,7 +928,6 @@
             
             const centerY = canvas.height / 2;
             const scale = 0.001;
-            const timeScale = 2;
             
             // Create gradient for ECG line
             const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
@@ -1000,128 +994,6 @@
             }
         }
         
-        // Show device list modal
-        function showDeviceList() {
-            deviceModal.style.display = 'flex';
-            refreshDeviceList();
-        }
-        
-        // Hide device list modal
-        function hideDeviceList() {
-            deviceModal.style.display = 'none';
-        }
-        
-        // Refresh device list
-        async function refreshDeviceList() {
-            if (scanInProgress) return;
-            
-            scanInProgress = true;
-            deviceList.innerHTML = '<div class="spinner"></div>';
-            
-            try {
-                // Scan for BLE devices
-                devices = await navigator.bluetooth.requestDevice({
-                    filters: [{ name: 'ECG Device' }], // Tìm device có tên ECG Device
-                    optionalServices: [SERVICE_UUID]
-                });
-                
-                displayDevices();
-            } catch (error) {
-                console.error('Error scanning devices:', error);
-                deviceList.innerHTML = `<div style="text-align: center; color: #666; padding: 20px;">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                    <p>${error.message}</p>
-                </div>`;
-            } finally {
-                scanInProgress = false;
-            }
-        }
-        
-        // Display found devices
-        function displayDevices() {
-            deviceList.innerHTML = '';
-            
-            if (devices.length === 0) {
-                deviceList.innerHTML = `<div style="text-align: center; color: #666; padding: 20px;">
-                    <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                    <p>No BLE devices found</p>
-                    <p style="font-size: 0.9rem; margin-top: 10px;">Make sure your ECG device is powered on and in pairing mode</p>
-                </div>`;
-                return;
-            }
-            
-            devices.forEach(deviceInfo => {
-                const deviceItem = document.createElement('div');
-                deviceItem.className = 'device-item';
-                deviceItem.innerHTML = `
-                    <div class="device-name">
-                        <i class="fas fa-heartbeat"></i> ${deviceInfo.name || 'Unknown Device'}
-                    </div>
-                    <div class="device-id">${deviceInfo.id || 'Unknown ID'}</div>
-                    ${deviceInfo.rssi ? `<div class="device-rssi">Signal: ${deviceInfo.rssi} dBm</div>` : ''}
-                `;
-                
-                deviceItem.onclick = () => connectToDevice(deviceInfo);
-                deviceList.appendChild(deviceItem);
-            });
-        }
-        
-        // Connect to selected device
-        async function connectToDevice(selectedDevice) {
-            try {
-                hideDeviceList();
-                updateStatus('Connecting...', 'connecting');
-                
-                // Handle disconnection
-                selectedDevice.addEventListener('gattserverdisconnected', () => {
-                    updateStatus('Disconnected', 'disconnected');
-                    isConnected = false;
-                    scanBtn.disabled = false;
-                    disconnectBtn.disabled = true;
-                    
-                    addLogEntry('Device disconnected');
-                });
-                
-                // Connect to GATT server
-                server = await selectedDevice.gatt.connect();
-                updateStatus('Connected', 'connected');
-                isConnected = true;
-                
-                // Get primary service
-                service = await server.getPrimaryService(SERVICE_UUID);
-                
-                // Get characteristic
-                characteristic = await service.getCharacteristic(CHAR_UUID);
-                
-                // Start notifications
-                await characteristic.startNotifications();
-                
-                // Handle incoming data
-                characteristic.addEventListener('characteristicvaluechanged', event => {
-                    const value = event.target.value;
-                    const parsedData = parseECGData(value);
-                    
-                    if (parsedData) {
-                        processECGPacket(parsedData);
-                    }
-                });
-                
-                // Update UI
-                updateDeviceInfo(selectedDevice);
-                scanBtn.disabled = true;
-                disconnectBtn.disabled = false;
-                
-                // Log connection success
-                addLogEntry(`Connected to ${selectedDevice.name || 'ECG Device'}`);
-                
-            } catch (error) {
-                updateStatus('Connection Failed', 'error');
-                alert(`Error connecting: ${error.message}`);
-                console.error('Connection error:', error);
-                addLogEntry(`Connection failed: ${error.message}`);
-            }
-        }
-        
         // Add log entry
         function addLogEntry(message) {
             const time = new Date().toLocaleTimeString([], { 
@@ -1169,8 +1041,97 @@
             }
         }
         
-        // Event Listeners
-        scanBtn.onclick = showDeviceList;
+        // Connect to BLE device
+        scanBtn.onclick = async () => {
+            try {
+                updateStatus('Scanning for devices...', 'scanning');
+                addLogEntry('Scanning for BLE devices...');
+                
+                // Request BLE device connection với UUID đúng định dạng
+                // Cách 1: Scan tất cả devices và filter bằng optionalServices
+                device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: [SERVICE_UUID]
+                });
+                
+                // Cách 2: Nếu muốn chỉ scan devices có advertise service của bạn
+                // device = await navigator.bluetooth.requestDevice({
+                //     filters: [{ services: [SERVICE_UUID] }]
+                // });
+                
+                updateDeviceInfo(device);
+                updateStatus('Connecting...', 'connecting');
+                addLogEntry(`Found device: ${device.name || 'Unnamed'} (${device.id})`);
+                
+                // Handle disconnection
+                device.addEventListener('gattserverdisconnected', () => {
+                    updateStatus('Disconnected', 'disconnected');
+                    isConnected = false;
+                    scanBtn.disabled = false;
+                    disconnectBtn.disabled = true;
+                    
+                    addLogEntry('Device disconnected');
+                });
+                
+                // Connect to GATT server
+                server = await device.gatt.connect();
+                updateStatus('Connected', 'connected');
+                isConnected = true;
+                
+                // Debug: List all services
+                const services = await server.getPrimaryServices();
+                console.log('Available services:', services.map(s => s.uuid));
+                
+                // Get primary service
+                service = await server.getPrimaryService(SERVICE_UUID);
+                console.log('Service found:', service.uuid);
+                
+                // Get characteristic
+                characteristic = await service.getCharacteristic(CHAR_UUID);
+                console.log('Characteristic found:', characteristic.uuid);
+                
+                // Start notifications
+                await characteristic.startNotifications();
+                
+                // Handle incoming data
+                characteristic.addEventListener('characteristicvaluechanged', event => {
+                    const value = event.target.value;
+                    console.log('Received data, length:', value.byteLength);
+                    const parsedData = parseECGData(value);
+                    
+                    if (parsedData) {
+                        processECGPacket(parsedData);
+                    } else {
+                        console.error('Failed to parse ECG data');
+                    }
+                });
+                
+                // Update UI
+                scanBtn.disabled = true;
+                disconnectBtn.disabled = false;
+                
+                // Log connection success
+                addLogEntry(`Connected successfully to ${device.name || 'ECG Device'}`);
+                
+            } catch (error) {
+                updateStatus('Connection Failed', 'error');
+                addLogEntry(`Error: ${error.message}`);
+                console.error('Bluetooth error:', error);
+                
+                // Show user-friendly error message
+                if (error.name === 'NotFoundError') {
+                    alert('No Bluetooth devices found. Make sure your ECG device is powered on and in pairing mode.');
+                } else if (error.name === 'SecurityError') {
+                    alert('Bluetooth permission denied. Please allow Bluetooth access in your browser settings.');
+                } else if (error.name === 'NetworkError') {
+                    alert('Connection failed. Make sure device is in range and try again.');
+                } else {
+                    alert(`Bluetooth error: ${error.message}`);
+                }
+            }
+        };
+        
+        // Disconnect from device
         disconnectBtn.onclick = () => {
             if (device && device.gatt.connected) {
                 device.gatt.disconnect();
@@ -1181,12 +1142,14 @@
             addLogEntry('Manually disconnected');
         };
         
+        // Clear chart
         clearChartBtn.onclick = () => {
             ecgSamples = [];
             drawGrid();
             addLogEntry('Chart cleared');
         };
         
+        // Export data
         exportBtn.onclick = () => {
             if (ecgSamples.length === 0) {
                 alert('No data to export');
@@ -1230,16 +1193,6 @@
             autoScrollBtn.textContent = autoScroll ? 'Auto-scroll: ON' : 'Auto-scroll: OFF';
         };
         
-        closeModalBtn.onclick = hideDeviceList;
-        refreshDevicesBtn.onclick = refreshDeviceList;
-        
-        // Close modal when clicking outside
-        window.onclick = (event) => {
-            if (event.target === deviceModal) {
-                hideDeviceList();
-            }
-        };
-        
         // Initialize on load
         window.onload = () => {
             initCanvas();
@@ -1259,6 +1212,7 @@
                 alert('Web Bluetooth API is not supported in this browser. Please use Chrome/Edge on desktop or Android.');
                 updateStatus('Not Supported', 'error');
                 scanBtn.disabled = true;
+                addLogEntry('ERROR: Web Bluetooth API not supported in this browser');
             }
         };
     </script>
