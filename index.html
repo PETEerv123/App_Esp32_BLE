@@ -681,7 +681,7 @@
         </section>
 
         <!-- Data Log -->
-        <section class="data-log-container">
+        <!--<section class="data-log-container">
             <div class="log-header">
                 <div class="log-title">
                     <i class="fas fa-stream"></i> Data Stream Log
@@ -763,14 +763,17 @@
         function initCanvas() {
             canvas = document.getElementById('ecgCanvas');
             ctx = canvas.getContext('2d');
-            
-            // Set canvas dimensions
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-            
-            // Draw initial grid
-            drawGrid();
+
+            resizeCanvas(); // AUTO lần đầu
+            window.addEventListener('resize', resizeCanvas); // AUTO khi resize
         }
+          function resizeCanvas() {
+              const rect = canvas.getBoundingClientRect();
+
+              canvas.width  = rect.width;
+              canvas.height = rect.height;
+              drawGrid(); // vẽ lại grid khi auto resize
+          }
         
         // Draw ECG grid
         function drawGrid() {
