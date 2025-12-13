@@ -36,6 +36,7 @@
             line-height: 1.6;
             padding: 20px;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .dashboard-container {
@@ -43,8 +44,9 @@
             margin: 0 auto;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto auto auto 1fr;
+            grid-template-rows: auto auto 1fr;
             gap: 20px;
+            height: calc(100vh - 40px);
         }
 
         /* Header */
@@ -52,7 +54,7 @@
             grid-column: 1 / -1;
             background: var(--gradient-primary);
             color: var(--text-light);
-            padding: 25px 30px;
+            padding: 20px 30px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(10, 31, 83, 0.2);
             display: flex;
@@ -68,7 +70,7 @@
         }
 
         .header-title h1 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 700;
             margin: 0;
         }
@@ -108,22 +110,24 @@
             grid-row: 2;
             background: white;
             border-radius: 15px;
-            padding: 25px;
+            padding: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-direction: column;
         }
 
         .panel-title {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 2px solid var(--light-gray);
         }
 
         .panel-title h2 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: var(--primary-blue);
             font-weight: 600;
         }
@@ -131,13 +135,14 @@
         .device-info-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-grow: 1;
         }
 
         .info-card {
             background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 18px;
+            padding: 15px;
             border-radius: 10px;
             border-left: 4px solid var(--secondary-blue);
             transition: transform 0.3s ease;
@@ -149,7 +154,7 @@
         }
 
         .info-label {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #666;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -160,7 +165,7 @@
         }
 
         .info-value {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             font-family: 'Courier New', monospace;
             color: var(--primary-blue);
@@ -170,22 +175,22 @@
         /* Connection Buttons */
         .connection-buttons {
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: auto;
         }
 
         .btn {
-            padding: 16px 25px;
+            padding: 14px 20px;
             border: none;
-            border-radius: 12px;
-            font-size: 1rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             flex: 1;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
@@ -210,106 +215,26 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
-        /* Device List Modal */
-        .device-list-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .device-list-content {
-            background: white;
-            width: 90%;
-            max-width: 500px;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-        }
-
-        .device-list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--light-gray);
-        }
-
-        .device-list-header h3 {
-            font-size: 1.5rem;
-            color: var(--primary-blue);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .device-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-        }
-
-        .device-item {
-            padding: 15px;
-            margin-bottom: 10px;
-            background: var(--light-gray);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-
-        .device-item:hover {
-            background: #e3e2df;
-            border-left-color: var(--secondary-blue);
-        }
-
-        .device-name {
-            font-weight: 600;
-            color: var(--primary-blue);
-            margin-bottom: 5px;
-        }
-
-        .device-id {
-            font-size: 0.9rem;
-            color: #666;
-            font-family: 'Courier New', monospace;
-        }
-
-        .device-rssi {
-            font-size: 0.85rem;
-            color: #888;
-        }
-
         /* Vital Stats */
         .vital-stats {
             grid-column: 2;
             grid-row: 2;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            gap: 12px;
         }
 
         .stat-card {
             background: white;
             border-radius: 15px;
-            padding: 25px 20px;
+            padding: 20px 15px;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             transition: transform 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .stat-card:hover {
@@ -318,8 +243,8 @@
         }
 
         .stat-icon {
-            font-size: 2rem;
-            margin-bottom: 15px;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
         }
 
         .hr-icon { color: var(--accent-red); }
@@ -327,10 +252,10 @@
         .accel-icon { color: var(--secondary-blue); }
 
         .stat-value {
-            font-size: 2.8rem;
+            font-size: 2.4rem;
             font-weight: 700;
             line-height: 1;
-            margin: 10px 0;
+            margin: 8px 0;
         }
 
         .hr-value { color: var(--accent-red); }
@@ -338,7 +263,7 @@
         .accel-value { color: var(--secondary-blue); }
 
         .stat-label {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #666;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -346,7 +271,7 @@
         }
 
         .stat-unit {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #888;
             margin-top: 5px;
         }
@@ -357,25 +282,26 @@
             grid-row: 3;
             background: var(--gradient-primary);
             border-radius: 15px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 15px 35px rgba(10, 31, 83, 0.3);
-            margin-top: 10px;
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            min-height: 0; /* Important for flex child */
         }
 
         .chart-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
         }
 
         .chart-title {
             color: white;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -384,7 +310,7 @@
 
         .chart-controls {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
         }
 
@@ -392,14 +318,14 @@
             background: rgba(255, 255, 255, 0.15);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 10px 20px;
-            border-radius: 10px;
+            padding: 8px 16px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .chart-btn:hover {
@@ -407,106 +333,29 @@
             transform: translateY(-2px);
         }
 
+        .chart-area {
+            flex: 1;
+            position: relative;
+            min-height: 0;
+            overflow: hidden;
+        }
+
         #ecgCanvas {
             width: 100%;
-            height: 350px;
+            height: 100%;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            backdrop-filter: blur(5px);
-        }
-
-        /* Data Log */
-        .data-log-container {
-            grid-column: 1 / -1;
-            grid-row: 4;
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            margin-top: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-        }
-
-        .log-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .log-title {
-            font-size: 1.3rem;
-            color: var(--primary-blue);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .log-controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .log-btn {
-            background: var(--light-gray);
-            border: none;
-            padding: 8px 15px;
             border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            color: var(--primary-blue);
-            transition: all 0.3s ease;
-        }
-
-        .log-btn:hover {
-            background: #e3e2df;
-        }
-
-        #dataArea {
-            height: 200px;
-            overflow-y: auto;
-            background: var(--light-gray);
-            padding: 15px;
-            border-radius: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .log-entry {
-            padding: 10px 0;
-            border-bottom: 1px solid var(--medium-gray);
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .log-entry:last-child {
-            border-bottom: none;
-        }
-
-        .timestamp {
-            color: #666;
-            font-size: 0.85rem;
-            margin-bottom: 5px;
-        }
-
-        .log-data {
-            color: var(--primary-blue);
-            font-weight: 600;
+            display: block;
         }
 
         /* Battery Indicator */
         .battery-indicator {
-            width: 60px;
-            height: 25px;
+            width: 50px;
+            height: 20px;
             border: 2px solid var(--accent-green);
-            border-radius: 5px;
+            border-radius: 4px;
             position: relative;
-            margin: 10px auto;
+            margin: 8px auto 0;
             background: transparent;
             overflow: hidden;
         }
@@ -515,17 +364,18 @@
             height: 100%;
             background: var(--gradient-success);
             transition: width 0.5s ease;
+            width: 0%;
         }
 
         .battery-tip {
             position: absolute;
-            right: -8px;
+            right: -6px;
             top: 50%;
             transform: translateY(-50%);
-            width: 8px;
-            height: 12px;
+            width: 6px;
+            height: 10px;
             background: var(--accent-green);
-            border-radius: 0 3px 3px 0;
+            border-radius: 0 2px 2px 0;
         }
 
         /* Loading Spinner */
@@ -548,6 +398,8 @@
         @media (max-width: 1200px) {
             .dashboard-container {
                 grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                height: auto;
             }
             .vital-stats {
                 grid-column: 1;
@@ -555,24 +407,55 @@
             }
             .ecg-chart-container {
                 grid-row: 4;
-            }
-            .data-log-container {
-                grid-row: 5;
+                min-height: 400px;
             }
         }
 
         @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-rows: auto auto auto;
+                gap: 15px;
+            }
             .vital-stats {
                 grid-template-columns: 1fr;
             }
             .connection-buttons {
                 flex-direction: column;
             }
+            .header-title h1 {
+                font-size: 1.6rem;
+            }
             .chart-controls {
                 flex-wrap: wrap;
+                justify-content: flex-end;
             }
-            .header-title h1 {
-                font-size: 1.8rem;
+            .chart-btn {
+                padding: 6px 12px;
+                font-size: 0.85rem;
+            }
+            .ecg-chart-container {
+                min-height: 350px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            .dashboard-container {
+                gap: 10px;
+            }
+            .header {
+                padding: 15px 20px;
+            }
+            .control-panel, .vital-stats, .ecg-chart-container {
+                padding: 15px;
+            }
+            .stat-value {
+                font-size: 2rem;
+            }
+            .ecg-chart-container {
+                min-height: 300px;
             }
         }
     </style>
@@ -595,7 +478,7 @@
         <section class="control-panel">
             <div class="panel-title">
                 <i class="fas fa-microchip"></i>
-                <h2>Device Control & Information</h2>
+                <h2>Device Control</h2>
             </div>
             
             <div class="device-info-grid">
@@ -623,7 +506,7 @@
 
             <div class="connection-buttons">
                 <button class="btn btn-scan" id="scanBtn">
-                    <i class="fas fa-bluetooth"></i> SCAN DEVICES
+                    <i class="fas fa-bluetooth"></i> SCAN
                 </button>
                 <button class="btn btn-disconnect" id="disconnectBtn" disabled>
                     <i class="fas fa-plug"></i> DISCONNECT
@@ -639,7 +522,7 @@
                 </div>
                 <div class="stat-label">Heart Rate</div>
                 <div class="stat-value hr-value" id="hrValue">--</div>
-                <div class="stat-unit">beats per minute</div>
+                <div class="stat-unit">bpm</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon bat-icon">
@@ -677,56 +560,16 @@
                     </button>
                 </div>
             </div>
-            <canvas id="ecgCanvas"></canvas>
-        </section>
-
-        <!-- Data Log -->
-        <section class="data-log-container">
-            <div class="log-header">
-                <div class="log-title">
-                    <i class="fas fa-stream"></i> Data Stream Log
-                </div>
-                <div class="log-controls">
-                    <button class="log-btn" id="clearLogBtn">Clear Log</button>
-                    <button class="log-btn" id="autoScrollBtn">Auto-scroll</button>
-                </div>
-            </div>
-            <div id="dataArea">
-                <div class="log-entry">
-                    <div class="timestamp">[System] Waiting for BLE connection...</div>
-                    <div class="log-data">Ready to scan and connect to ECG device</div>
-                </div>
+            <div class="chart-area">
+                <canvas id="ecgCanvas"></canvas>
             </div>
         </section>
-    </div> 
-
-    <!-- Device List Modal -->
-    <div class="device-list-modal" id="deviceModal">
-        <div class="device-list-content">
-            <div class="device-list-header">
-                <h3><i class="fas fa-bluetooth"></i> Available BLE Devices</h3>
-                <button class="close-btn" id="closeModalBtn">&times;</button>
-            </div>
-            <div class="device-list" id="deviceList">
-                <div class="spinner"></div>
-            </div>
-            <div class="connection-buttons">
-                <button class="btn btn-scan" id="refreshDevicesBtn">
-                    <i class="fas fa-sync-alt"></i> REFRESH LIST
-                </button>
-            </div>
-        </div>
     </div>
 
     <script>
-        // Constants - Sửa UUID thành đúng định dạng
-        // Cách 1: Sử dụng UUID đầy đủ 128-bit (recommended)
+        // Constants
         const SERVICE_UUID = '00000259-0000-1000-8000-00805f9b34fb';
         const CHAR_UUID = '00002a37-0000-1000-8000-00805f9b34fb';
-        
-        // Cách 2: Hoặc sử dụng 16-bit UUID với tiền tố đúng
-        // const SERVICE_UUID = '0259';
-        // const CHAR_UUID = '2a37';
 
         // Global variables
         let device = null;
@@ -734,11 +577,13 @@
         let service = null;
         let characteristic = null;
         let ecgSamples = [];
-        const MAX_DATA_POINTS = 300;
+        const MAX_DATA_POINTS = 500; // Increased for better visualization
         let canvas, ctx;
         let isConnected = false;
         let isPaused = false;
-        let autoScroll = true;
+        let animationFrameId = null;
+        let lastDrawTime = 0;
+        const DRAW_INTERVAL = 16; // ~60 FPS
 
         // DOM Elements
         const scanBtn = document.getElementById('scanBtn');
@@ -746,8 +591,6 @@
         const clearChartBtn = document.getElementById('clearChartBtn');
         const exportBtn = document.getElementById('exportBtn');
         const pauseBtn = document.getElementById('pauseBtn');
-        const clearLogBtn = document.getElementById('clearLogBtn');
-        const autoScrollBtn = document.getElementById('autoScrollBtn');
         const connectionStatusText = document.getElementById('connectionStatusText');
         const deviceName = document.getElementById('deviceName');
         const deviceId = document.getElementById('deviceId');
@@ -757,52 +600,80 @@
         const hrValue = document.getElementById('hrValue');
         const batValue = document.getElementById('batValue');
         const accelValue = document.getElementById('accelValue');
-        const dataArea = document.getElementById('dataArea');
         
-        // Initialize Canvas
+        // Initialize Canvas with proper resize handling
         function initCanvas() {
             canvas = document.getElementById('ecgCanvas');
             ctx = canvas.getContext('2d');
-
-            resizeCanvas(); // AUTO lần đầu
-            window.addEventListener('resize', resizeCanvas); // AUTO khi resize
+            
+            // Set initial size
+            resizeCanvas();
+            
+            // Add resize observer for responsive canvas
+            const resizeObserver = new ResizeObserver(() => {
+                resizeCanvas();
+                if (!isPaused && ecgSamples.length > 0) {
+                    drawECGWaveform();
+                }
+            });
+            
+            resizeObserver.observe(canvas.parentElement);
         }
-          function resizeCanvas() {
-              const rect = canvas.getBoundingClientRect();
-
-              canvas.width  = rect.width;
-              canvas.height = rect.height;
-              drawGrid(); // vẽ lại grid khi auto resize
-          }
         
-        // Draw ECG grid
+        // Resize canvas to fill container
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const dpr = window.devicePixelRatio || 1;
+            const rect = container.getBoundingClientRect();
+            
+            // Set canvas size in display pixels
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            
+            // Scale context to account for device pixel ratio
+            ctx.scale(dpr, dpr);
+            
+            // Set canvas CSS size to match container
+            canvas.style.width = `${rect.width}px`;
+            canvas.style.height = `${rect.height}px`;
+            
+            // Draw initial grid
+            drawGrid();
+        }
+        
+        // Draw ECG grid with improved resolution
         function drawGrid() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const width = canvas.width / (window.devicePixelRatio || 1);
+            const height = canvas.height / (window.devicePixelRatio || 1);
+            
+            ctx.clearRect(0, 0, width, height);
             
             // Background gradient
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
             gradient.addColorStop(0, 'rgba(255, 255, 255, 0.05)');
-            gradient.addColorStop(1, 'rgba(255, 255, 255, 0.02)');
+            gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.02)');
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0.05)');
             ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillRect(0, 0, width, height);
             
-            // Vertical lines (every 50px = 250ms at 200px/sec)
+            // Draw grid lines
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = 1;
-            ctx.setLineDash([5, 3]);
+            ctx.setLineDash([3, 3]);
             
-            for (let x = 0; x < canvas.width; x += 50) {
+            // Vertical lines (every 40px)
+            for (let x = 40; x < width; x += 40) {
                 ctx.beginPath();
                 ctx.moveTo(x, 0);
-                ctx.lineTo(x, canvas.height);
+                ctx.lineTo(x, height);
                 ctx.stroke();
             }
             
-            // Horizontal lines
-            for (let y = 0; y < canvas.height; y += 25) {
+            // Horizontal lines (every 20px)
+            for (let y = 20; y < height; y += 20) {
                 ctx.beginPath();
                 ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y);
+                ctx.lineTo(width, y);
                 ctx.stroke();
             }
             
@@ -812,9 +683,17 @@
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(0, canvas.height / 2);
-            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.moveTo(0, height / 2);
+            ctx.lineTo(width, height / 2);
             ctx.stroke();
+            
+            // Add scale markers
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'right';
+            ctx.fillText('1 mV', 50, 20);
+            ctx.textAlign = 'left';
+            ctx.fillText('Time →', width - 50, height - 10);
         }
         
         // Update device information display
@@ -850,6 +729,11 @@
         // Parse ECG data from buffer
         function parseECGData(dataView) {
             try {
+                if (dataView.byteLength < 207) { // 2+2+1+2+(50*4)=207 bytes
+                    console.warn(`Incomplete packet: ${dataView.byteLength} bytes`);
+                    return null;
+                }
+                
                 let offset = 0;
                 
                 // 1. Heart Rate (2 bytes, little-endian)
@@ -890,7 +774,7 @@
             }
         }
         
-        // Process ECG data packet
+        // Process ECG data packet with animation frame optimization
         function processECGPacket(parsedData) {
             if (!parsedData || isPaused) return;
             
@@ -915,108 +799,229 @@
                 }
             });
             
-            // Redraw ECG waveform
-            drawECGWaveform();
-            
-            // Update data log
-            updateDataLog(parsedData);
+            // Request animation frame for smooth drawing
+            const now = Date.now();
+            if (now - lastDrawTime >= DRAW_INTERVAL) {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                }
+                animationFrameId = requestAnimationFrame(drawECGWaveform);
+                lastDrawTime = now;
+            }
         }
         
-        // Draw ECG waveform
+        // Draw ECG waveform with improved performance
         function drawECGWaveform() {
             if (ecgSamples.length < 2 || isPaused) return;
+            
+            const width = canvas.width / (window.devicePixelRatio || 1);
+            const height = canvas.height / (window.devicePixelRatio || 1);
+            const centerY = height / 2;
+            const scale = 0.0008; // Adjusted scale for better visualization
+            const pixelsPerSample = width / Math.min(ecgSamples.length, MAX_DATA_POINTS);
             
             // Clear and redraw grid
             drawGrid();
             
-            const centerY = canvas.height / 2;
-            const scale = 0.001;
-            
             // Create gradient for ECG line
-            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            const gradient = ctx.createLinearGradient(0, 0, width, 0);
             gradient.addColorStop(0, 'rgba(255, 107, 107, 0.8)');
             gradient.addColorStop(0.5, 'rgba(229, 57, 53, 0.9)');
             gradient.addColorStop(1, 'rgba(198, 40, 40, 0.8)');
             
             ctx.strokeStyle = gradient;
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 2.5;
             ctx.lineJoin = 'round';
             ctx.lineCap = 'round';
             ctx.beginPath();
             
-            // Draw the waveform from left to right
-            const step = canvas.width / Math.min(ecgSamples.length, MAX_DATA_POINTS);
+            // Start from left to right for better performance
+            const startIndex = Math.max(0, ecgSamples.length - MAX_DATA_POINTS);
             let x = 0;
             
-            for (let i = Math.max(0, ecgSamples.length - MAX_DATA_POINTS); i < ecgSamples.length; i++) {
+            // Draw first point
+            const firstSample = ecgSamples[startIndex];
+            const firstY = centerY - (firstSample.sample * scale);
+            ctx.moveTo(x, firstY);
+            
+            // Draw remaining points
+            for (let i = startIndex + 1; i < ecgSamples.length; i++) {
+                x += pixelsPerSample;
                 const y = centerY - (ecgSamples[i].sample * scale);
+                ctx.lineTo(x, y);
                 
-                if (i === Math.max(0, ecgSamples.length - MAX_DATA_POINTS)) {
-                    ctx.moveTo(x, y);
-                } else {
-                    ctx.lineTo(x, y);
-                }
-                
-                x += step;
+                // Break if we've filled the canvas
+                if (x > width) break;
             }
             
             ctx.stroke();
             
-            // Add glow effect
-            ctx.shadowColor = 'rgba(229, 57, 53, 0.5)';
-            ctx.shadowBlur = 10;
+            // Add subtle glow effect
+            ctx.shadowColor = 'rgba(229, 57, 53, 0.3)';
+            ctx.shadowBlur = 8;
             ctx.stroke();
             ctx.shadowBlur = 0;
+            
+            // Add current value indicator
+            if (ecgSamples.length > 0) {
+                const lastSample = ecgSamples[ecgSamples.length - 1];
+                const lastY = centerY - (lastSample.sample * scale);
+                
+                // Draw indicator dot
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(width - 10, lastY, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw value text
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(`${lastSample.sample} μV`, width - 15, lastY - 10);
+            }
+            
+            animationFrameId = null;
         }
         
-        // Update data log
-        function updateDataLog(parsedData) {
-            const time = new Date().toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            
-            const logEntry = document.createElement('div');
-            logEntry.className = 'log-entry';
-            logEntry.innerHTML = `
-                <div class="timestamp">[${time}] Packet received</div>
-                <div class="log-data">HR: ${parsedData.heartRate} bpm | Battery: ${parsedData.battery}% | Activity: ${parsedData.accelerometer.toFixed(2)}g</div>
-            `;
-            dataArea.insertBefore(logEntry, dataArea.firstChild);
-            
-            // Keep only last 50 entries
-            const entries = dataArea.querySelectorAll('.log-entry');
-            if (entries.length > 50) {
-                dataArea.removeChild(entries[entries.length - 1]);
+        // Connect to BLE device
+        scanBtn.onclick = async () => {
+            try {
+                updateStatus('Scanning for devices...', 'scanning');
+                
+                // Request BLE device connection
+                device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: [SERVICE_UUID]
+                });
+                
+                updateDeviceInfo(device);
+                updateStatus('Connecting...', 'connecting');
+                
+                // Handle disconnection
+                device.addEventListener('gattserverdisconnected', () => {
+                    updateStatus('Disconnected', 'disconnected');
+                    isConnected = false;
+                    scanBtn.disabled = false;
+                    disconnectBtn.disabled = true;
+                    
+                    // Stop animation frame
+                    if (animationFrameId) {
+                        cancelAnimationFrame(animationFrameId);
+                        animationFrameId = null;
+                    }
+                });
+                
+                // Connect to GATT server
+                server = await device.gatt.connect();
+                updateStatus('Connected', 'connected');
+                isConnected = true;
+                
+                // Debug: List all services
+                const services = await server.getPrimaryServices();
+                console.log('Available services:', services.map(s => s.uuid));
+                
+                // Get primary service
+                service = await server.getPrimaryService(SERVICE_UUID);
+                console.log('Service found:', service.uuid);
+                
+                // Get characteristic
+                characteristic = await service.getCharacteristic(CHAR_UUID);
+                console.log('Characteristic found:', characteristic.uuid);
+                
+                // Start notifications
+                await characteristic.startNotifications();
+                
+                // Handle incoming data
+                characteristic.addEventListener('characteristicvaluechanged', event => {
+                    const value = event.target.value;
+                    const parsedData = parseECGData(value);
+                    
+                    if (parsedData) {
+                        processECGPacket(parsedData);
+                    } else {
+                        console.warn('Failed to parse ECG data, length:', value.byteLength);
+                    }
+                });
+                
+                // Update UI
+                scanBtn.disabled = true;
+                disconnectBtn.disabled = false;
+                
+            } catch (error) {
+                updateStatus('Connection Failed', 'error');
+                console.error('Bluetooth error:', error);
+                
+                // Show user-friendly error message
+                if (error.name === 'NotFoundError') {
+                    alert('No Bluetooth devices found. Make sure your ECG device is powered on and in pairing mode.');
+                } else if (error.name === 'SecurityError') {
+                    alert('Bluetooth permission denied. Please allow Bluetooth access in your browser settings.');
+                } else if (error.name === 'NetworkError') {
+                    alert('Connection failed. Make sure device is in range and try again.');
+                } else {
+                    alert(`Bluetooth error: ${error.message}`);
+                }
             }
-            
-            // Auto-scroll to top
-            if (autoScroll) {
-                dataArea.scrollTop = 0;
-            }
-        }
+        };
         
-        // Add log entry
-        function addLogEntry(message) {
-            const time = new Date().toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit'
+        // Disconnect from device
+        disconnectBtn.onclick = () => {
+            if (device && device.gatt.connected) {
+                device.gatt.disconnect();
+            }
+            updateStatus('Disconnected', 'disconnected');
+            scanBtn.disabled = false;
+            disconnectBtn.disabled = true;
+            
+            // Stop animation frame
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+        };
+        
+        // Clear chart
+        clearChartBtn.onclick = () => {
+            ecgSamples = [];
+            drawGrid();
+        };
+        
+        // Export data
+        exportBtn.onclick = () => {
+            if (ecgSamples.length === 0) {
+                alert('No data to export');
+                return;
+            }
+            
+            let csvContent = "Timestamp,Heart Rate (bpm),Battery (%),Activity (g),ECG Value (μV)\n";
+            
+            ecgSamples.forEach(point => {
+                const time = new Date(point.timestamp).toLocaleString();
+                csvContent += `${time},${point.hr},${point.battery},${point.accelerometer},${point.sample}\n`;
             });
             
-            const logEntry = document.createElement('div');
-            logEntry.className = 'log-entry';
-            logEntry.innerHTML = `
-                <div class="timestamp">[${time}]</div>
-                <div class="log-data">${message}</div>
-            `;
-            dataArea.insertBefore(logEntry, dataArea.firstChild);
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ecg_data_${new Date().toISOString().slice(0,10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        };
+        
+        // Pause/Resume chart
+        pauseBtn.onclick = () => {
+            isPaused = !isPaused;
+            pauseBtn.innerHTML = isPaused ? 
+                '<i class="fas fa-play"></i> Resume' : 
+                '<i class="fas fa-pause"></i> Pause';
             
-            if (autoScroll) {
-                dataArea.scrollTop = 0;
+            if (!isPaused && ecgSamples.length > 0) {
+                drawECGWaveform();
             }
-        }
+        };
         
         // Update connection status
         function updateStatus(message, status) {
@@ -1044,181 +1049,29 @@
             }
         }
         
-        // Connect to BLE device
-        scanBtn.onclick = async () => {
-            try {
-                updateStatus('Scanning for devices...', 'scanning');
-                addLogEntry('Scanning for BLE devices...');
-                
-                // Request BLE device connection với UUID đúng định dạng
-                // Cách 1: Scan tất cả devices và filter bằng optionalServices
-                device = await navigator.bluetooth.requestDevice({
-                    acceptAllDevices: true,
-                    optionalServices: [SERVICE_UUID]
-                });
-                
-                // Cách 2: Nếu muốn chỉ scan devices có advertise service của bạn
-                // device = await navigator.bluetooth.requestDevice({
-                //     filters: [{ services: [SERVICE_UUID] }]
-                // });
-                
-                updateDeviceInfo(device);
-                updateStatus('Connecting...', 'connecting');
-                addLogEntry(`Found device: ${device.name || 'Unnamed'} (${device.id})`);
-                
-                // Handle disconnection
-                device.addEventListener('gattserverdisconnected', () => {
-                    updateStatus('Disconnected', 'disconnected');
-                    isConnected = false;
-                    scanBtn.disabled = false;
-                    disconnectBtn.disabled = true;
-                    
-                    addLogEntry('Device disconnected');
-                });
-                
-                // Connect to GATT server
-                server = await device.gatt.connect();
-                updateStatus('Connected', 'connected');
-                isConnected = true;
-                
-                // Debug: List all services
-                const services = await server.getPrimaryServices();
-                console.log('Available services:', services.map(s => s.uuid));
-                
-                // Get primary service
-                service = await server.getPrimaryService(SERVICE_UUID);
-                console.log('Service found:', service.uuid);
-                
-                // Get characteristic
-                characteristic = await service.getCharacteristic(CHAR_UUID);
-                console.log('Characteristic found:', characteristic.uuid);
-                
-                // Start notifications
-                await characteristic.startNotifications();
-                
-                // Handle incoming data
-                characteristic.addEventListener('characteristicvaluechanged', event => {
-                    const value = event.target.value;
-                    console.log('Received data, length:', value.byteLength);
-                    const parsedData = parseECGData(value);
-                    
-                    if (parsedData) {
-                        processECGPacket(parsedData);
-                    } else {
-                        console.error('Failed to parse ECG data');
-                    }
-                });
-                
-                // Update UI
-                scanBtn.disabled = true;
-                disconnectBtn.disabled = false;
-                
-                // Log connection success
-                addLogEntry(`Connected successfully to ${device.name || 'ECG Device'}`);
-                
-            } catch (error) {
-                updateStatus('Connection Failed', 'error');
-                addLogEntry(`Error: ${error.message}`);
-                console.error('Bluetooth error:', error);
-                
-                // Show user-friendly error message
-                if (error.name === 'NotFoundError') {
-                    alert('No Bluetooth devices found. Make sure your ECG device is powered on and in pairing mode.');
-                } else if (error.name === 'SecurityError') {
-                    alert('Bluetooth permission denied. Please allow Bluetooth access in your browser settings.');
-                } else if (error.name === 'NetworkError') {
-                    alert('Connection failed. Make sure device is in range and try again.');
-                } else {
-                    alert(`Bluetooth error: ${error.message}`);
-                }
-            }
-        };
-        
-        // Disconnect from device
-        disconnectBtn.onclick = () => {
-            if (device && device.gatt.connected) {
-                device.gatt.disconnect();
-            }
-            updateStatus('Disconnected', 'disconnected');
-            scanBtn.disabled = false;
-            disconnectBtn.disabled = true;
-            addLogEntry('Manually disconnected');
-        };
-        
-        // Clear chart
-        clearChartBtn.onclick = () => {
-            ecgSamples = [];
-            drawGrid();
-            addLogEntry('Chart cleared');
-        };
-        
-        // Export data
-        exportBtn.onclick = () => {
-            if (ecgSamples.length === 0) {
-                alert('No data to export');
-                return;
-            }
-            
-            let csvContent = "Timestamp,Heart Rate (bpm),Battery (%),Activity (g),ECG Value (μV)\n";
-            
-            ecgSamples.forEach(point => {
-                const time = new Date(point.timestamp).toLocaleString();
-                csvContent += `${time},${point.hr},${point.battery},${point.accelerometer},${point.sample}\n`;
-            });
-            
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `ecg_data_${new Date().toISOString().slice(0,10)}_${new Date().getHours()}${new Date().getMinutes()}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            
-            addLogEntry(`Data exported (${ecgSamples.length} samples)`);
-        };
-        
-        pauseBtn.onclick = () => {
-            isPaused = !isPaused;
-            pauseBtn.innerHTML = isPaused ? 
-                '<i class="fas fa-play"></i> Resume' : 
-                '<i class="fas fa-pause"></i> Pause';
-            addLogEntry(isPaused ? 'Chart paused' : 'Chart resumed');
-        };
-        
-        clearLogBtn.onclick = () => {
-            dataArea.innerHTML = '<div class="log-entry"><div class="timestamp">[System] Log cleared</div><div class="log-data">Log entries cleared</div></div>';
-        };
-        
-        autoScrollBtn.onclick = () => {
-            autoScroll = !autoScroll;
-            autoScrollBtn.textContent = autoScroll ? 'Auto-scroll: ON' : 'Auto-scroll: OFF';
-        };
-        
         // Initialize on load
         window.onload = () => {
             initCanvas();
             updateStatus('Ready to Connect', 'disconnected');
             updateBatteryDisplay(0);
             
-            // Handle window resize
-            window.onresize = () => {
-                initCanvas();
-                if (ecgSamples.length > 0) {
-                    drawECGWaveform();
-                }
-            };
-            
             // Check for Web Bluetooth API support
             if (!navigator.bluetooth) {
                 alert('Web Bluetooth API is not supported in this browser. Please use Chrome/Edge on desktop or Android.');
                 updateStatus('Not Supported', 'error');
                 scanBtn.disabled = true;
-                addLogEntry('ERROR: Web Bluetooth API not supported in this browser');
             }
         };
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            if (device && device.gatt.connected) {
+                device.gatt.disconnect();
+            }
+        });
     </script>
 </body>
 </html>
-
