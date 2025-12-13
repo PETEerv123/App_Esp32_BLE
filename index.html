@@ -424,9 +424,9 @@
                 <div class="stat-unit">%</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">ECG Value</div>
-                <div class="stat-value" id="ecgValue">--</div>
-                <div class="stat-unit">μV</div>
+                <div class="stat-label">Acceleration</div>
+                <div class="stat-value" id="accelValue">--</div>
+                <div class="stat-unit">g</div>
             </div>
         </section>
 
@@ -443,7 +443,7 @@
         </section>
 
         <!-- Data Log -->
-        <!-- <section class="data-log-container">
+        <section class="data-log-container">
             <div class="log-title">📊 Data Stream Log</div>
             <div id="dataArea">
                 <div class="log-entry">
@@ -451,21 +451,22 @@
                     <div class="log-data">Waiting for BLE connection...</div>
                 </div>
             </div>
-        </section> -->
+        </section>
     </div>
 
     <script>
         // Constants
-        const SERVICE_UUID = 0x0259;  // Heart Rate Service (16-bit)[citation:9]
-        const CHAR_UUID = 0x2A37;     // Heart Rate Measurement Characteristic (16-bit)[citation:9]
+        const SERVICE_UUID = 0x0259;  // Heart Rate Service (16-bit)
+        const CHAR_UUID = 0x2A37;     // Heart Rate Measurement Characteristic (16-bit)
 
         // Global variables
         let device = null;
         let server = null;
         let service = null;
         let characteristic = null;
-        let ecgData = [];
+        let ecgSamples = [];  // Array of 50 ECG samples
         const MAX_DATA_POINTS = 300;
+        let currentSampleIndex = 0;
         let canvas, ctx;
         let isConnected = false;
 
@@ -481,7 +482,7 @@
         const charUUID = document.getElementById('charUUID');
         const hrValue = document.getElementById('hrValue');
         const batValue = document.getElementById('batValue');
-        const ecgValue = document.getElementById('ecgValue');
+        const accelValue = document.getElementById('accelValue');
         const dataArea = document.getElementById('dataArea');
         
         // Initialize Canvas
@@ -535,7 +536,7 @@
         
         // Update device information display
         function updateDeviceInfo(deviceObj) {
-            deviceName.textContent = deviceObj.name || 'Unnamed Device';
+            deviceName.textContent = deviceObj.name || 'ECG Device';
             
             // Display device ID (or MAC address if available)
             if (deviceObj.id) {
@@ -547,37 +548,83 @@
             connectionStatusText.style.color = '#2ac145';
         }
         
-        // Plot ECG point
-        function plotECGPoint(sample, hr, battery) {
-            // Add new data point
-            ecgData.push({
-                sample: sample,
-                hr: hr,
-                battery: battery,
-                timestamp: Date.now()
-            });
-            
-            // Keep only last MAX_DATA_POINTS
-            if (ecgData.length > MAX_DATA_POINTS) {
-                ecgData.shift();
+        // Parse ECG data from buffer
+        function parseECGData(dataView) {
+            try {
+                let offset = 0;
+                
+                // 1. Heart Rate (2 bytes, little-endian)
+                const hr = dataView.getInt16(offset, true);
+                offset += 2;
+                
+                // 2. RR Interval (2 bytes, little-endian)
+                const rr = dataView.getInt16(offset, true);
+                offset += 2;
+                
+                // 3. Battery Level (1 byte)
+                const battery = dataView.getUint8(offset);
+                offset += 1;
+                
+                // 4. Accelerometer (2 bytes, little-endian)
+                const accel = dataView.getUint16(offset, true);
+                offset += 2;
+                
+                // 5. ECG samples (50 samples * 4 bytes each = 200 bytes)
+                const ecgSamples = [];
+                for (let i = 0; i < 50; i++) {
+                    const sample = dataView.getInt32(offset, true);
+                    ecgSamples.push(sample);
+                    offset += 4;
+                }
+                
+                return {
+                    heartRate: hr,
+                    rrInterval: rr,
+                    battery: battery,
+                    accelerometer: accel / 1000.0, // Convert back to g
+                    ecgSamples: ecgSamples,
+                    timestamp: Date.now()
+                };
+            } catch (error) {
+                console.error('Error parsing ECG data:', error);
+                return null;
             }
+        }
+        
+        // Process ECG data packet
+        function processECGPacket(parsedData) {
+            if (!parsedData) return;
             
             // Update real-time values
-            hrValue.textContent = hr;
-            batValue.textContent = battery;
-            // ecgValue.textContent = sample;
+            hrValue.textContent = parsedData.heartRate;
+            batValue.textContent = parsedData.battery;
+            accelValue.textContent = parsedData.accelerometer.toFixed(2);
+            
+            // Add all 50 ECG samples to display
+            parsedData.ecgSamples.forEach(sample => {
+                ecgSamples.push({
+                    sample: sample,
+                    hr: parsedData.heartRate,
+                    battery: parsedData.battery,
+                    timestamp: Date.now()
+                });
+                
+                // Keep only last MAX_DATA_POINTS
+                if (ecgSamples.length > MAX_DATA_POINTS) {
+                    ecgSamples.shift();
+                }
+            });
             
             // Redraw ECG waveform
             drawECGWaveform();
             
-            // Update data log
-            // updateDataLog(sample, hr, battery);
-            updateDataLog( hr, battery);
+            // Update data log (only log once per packet, not 50 times)
+            updateDataLog(parsedData);
         }
         
         // Draw ECG waveform
         function drawECGWaveform() {
-            if (ecgData.length < 2) return;
+            if (ecgSamples.length < 2) return;
             
             // Clear and redraw grid
             drawGrid();
@@ -602,10 +649,10 @@
             const startX = canvas.width;
             let x = startX;
             
-            for (let i = ecgData.length - 1; i >= 0; i--) {
-                const y = centerY - (ecgData[i].sample * scale);
+            for (let i = ecgSamples.length - 1; i >= 0; i--) {
+                const y = centerY - (ecgSamples[i].sample * scale);
                 
-                if (i === ecgData.length - 1) {
+                if (i === ecgSamples.length - 1) {
                     ctx.moveTo(x, y);
                 } else {
                     ctx.lineTo(x, y);
@@ -620,21 +667,21 @@
         }
         
         // Update data log
-        //  function updateDataLog(sample, hr, battery) {
-        function updateDataLog(hr, battery) {
+        function updateDataLog(parsedData) {
             const time = new Date().toLocaleTimeString([], { 
                 hour: '2-digit', 
                 minute: '2-digit',
                 second: '2-digit'
             });
-            //                <div class="log-data">HR: ${hr} bpm | Battery: ${battery}% | ECG: ${sample} μV</div>
+            
             const logEntry = document.createElement('div');
             logEntry.className = 'log-entry';
             logEntry.innerHTML = `
                 <div class="timestamp">[${time}]</div>
-                <div class="log-data">HR: ${hr} bpm | Battery: ${battery}% </div>
+                <div class="log-data">HR: ${parsedData.heartRate} bpm | Battery: ${parsedData.battery}% | Accel: ${parsedData.accelerometer.toFixed(2)}g | Samples: ${parsedData.ecgSamples.length}</div>
             `;
             dataArea.insertBefore(logEntry, dataArea.firstChild);
+            
             // Keep only last 20 entries
             const entries = dataArea.querySelectorAll('.log-entry');
             if (entries.length > 20) {
@@ -642,47 +689,14 @@
             }
         }
         
-        // Parse incoming BLE data
-        function parseECGData(dataView) {
-            let offset = 0;
-            
-            // Heart Rate (2 bytes, little-endian)
-            const hr = dataView.getUint16(offset, true);
-            offset += 2;
-            
-            // RR Interval (2 bytes, little-endian)
-            const rr = dataView.getUint16(offset, true);
-            offset += 2;
-            
-            // Battery Level (1 byte)
-            const battery = dataView.getUint8(offset);
-            offset += 1;
-            
-            // Accelerometer (2 bytes, little-endian)
-            const accel = dataView.getUint16(offset, true) / 1000.0;
-            offset += 2;
-            
-            // ECG Sample (4 bytes, little-endian)
-            const ecgSample = dataView.getInt32(offset, true);
-            
-            return {
-                heartRate: hr,
-                rrInterval: rr,
-                battery: battery,
-                accelerometer: accel,
-                ecgSample: ecgSample,
-                timestamp: Date.now()
-            };
-        }
-        
         // Connect to BLE device
         scanBtn.onclick = async () => {
             try {
                 updateStatus('Scanning for devices...', 'scanning');
                 
-                // Request BLE device connection[citation:2]
+                // Request BLE device connection
                 device = await navigator.bluetooth.requestDevice({
-                    filters: [{ name: 'ECG Device' }],
+                    filters: [{ services: [SERVICE_UUID] }],
                     optionalServices: [SERVICE_UUID]
                 });
                 
@@ -708,13 +722,13 @@
                 updateStatus('Connected', 'connected');
                 isConnected = true;
                 
-                // Get primary service[citation:1][citation:9]
+                // Get primary service
                 service = await server.getPrimaryService(SERVICE_UUID);
                 
                 // Get characteristic
                 characteristic = await service.getCharacteristic(CHAR_UUID);
                 
-                // Start notifications (server pushes data)[citation:9]
+                // Start notifications (server pushes data)
                 await characteristic.startNotifications();
                 
                 // Handle incoming data
@@ -723,7 +737,7 @@
                     const parsedData = parseECGData(value);
                     
                     if (parsedData) {
-                        plotECGPoint(parsedData.ecgSample, parsedData.heartRate, parsedData.battery);
+                        processECGPacket(parsedData);
                     }
                 });
                 
@@ -756,7 +770,7 @@
         
         // Clear chart
         clearChartBtn.onclick = () => {
-            ecgData = [];
+            ecgSamples = [];
             drawGrid();
             dataArea.innerHTML = `<div class="log-entry">
                 <div class="timestamp">[System]</div>
@@ -766,7 +780,7 @@
         
         // Export data
         exportBtn.onclick = () => {
-            if (ecgData.length === 0) {
+            if (ecgSamples.length === 0) {
                 alert('No data to export');
                 return;
             }
@@ -774,7 +788,7 @@
             // Create CSV content
             let csvContent = "Timestamp,Heart Rate (bpm),Battery (%),ECG Value (μV)\n";
             
-            ecgData.forEach(point => {
+            ecgSamples.forEach(point => {
                 const time = new Date(point.timestamp).toLocaleTimeString();
                 csvContent += `${time},${point.hr},${point.battery},${point.sample}\n`;
             });
@@ -792,7 +806,7 @@
             
             dataArea.innerHTML = `<div class="log-entry">
                 <div class="timestamp">[System]</div>
-                <div class="log-data">Data exported (${ecgData.length} samples)</div>
+                <div class="log-data">Data exported (${ecgSamples.length} samples)</div>
             </div>` + dataArea.innerHTML;
         };
         
@@ -830,7 +844,7 @@
             // Handle window resize
             window.onresize = () => {
                 initCanvas();
-                if (ecgData.length > 0) {
+                if (ecgSamples.length > 0) {
                     drawECGWaveform();
                 }
             };
