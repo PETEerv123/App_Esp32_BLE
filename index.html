@@ -286,7 +286,8 @@
             box-shadow: 0 15px 35px rgba(10, 31, 83, 0.3);
             display: flex;
             flex-direction: column;
-            min-height: 0; /* Important for flex child */
+            min-height: 0;
+            overflow: hidden;
         }
 
         .chart-header {
@@ -336,8 +337,8 @@
         .chart-area {
             flex: 1;
             position: relative;
-            min-height: 0;
-            overflow: hidden;
+            min-height: 300px;
+            width: 100%;
         }
 
         #ecgCanvas {
@@ -376,22 +377,6 @@
             height: 10px;
             background: var(--accent-green);
             border-radius: 0 2px 2px 0;
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--secondary-blue);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         /* Responsive */
@@ -577,13 +562,14 @@
         let service = null;
         let characteristic = null;
         let ecgSamples = [];
-        const MAX_DATA_POINTS = 500; // Increased for better visualization
+        const MAX_DATA_POINTS = 500;
         let canvas, ctx;
         let isConnected = false;
         let isPaused = false;
         let animationFrameId = null;
         let lastDrawTime = 0;
         const DRAW_INTERVAL = 16; // ~60 FPS
+        let resizeTimeout = null;
 
         // DOM Elements
         const scanBtn = document.getElementById('scanBtn');
@@ -601,51 +587,97 @@
         const batValue = document.getElementById('batValue');
         const accelValue = document.getElementById('accelValue');
         
-        // Initialize Canvas with proper resize handling
+        // Initialize Canvas with proper resize handling - FIXED VERSION
         function initCanvas() {
             canvas = document.getElementById('ecgCanvas');
             ctx = canvas.getContext('2d');
             
-            // Set initial size
-            resizeCanvas();
+            // Force initial resize
+            forceResizeCanvas();
             
-            // Add resize observer for responsive canvas
-            const resizeObserver = new ResizeObserver(() => {
-                resizeCanvas();
-                if (!isPaused && ecgSamples.length > 0) {
-                    drawECGWaveform();
-                }
-            });
-            
-            resizeObserver.observe(canvas.parentElement);
+            // Set up multiple resize listeners for maximum compatibility
+            setupResizeListeners();
         }
         
-        // Resize canvas to fill container
-        function resizeCanvas() {
-            const container = canvas.parentElement;
+        // Force resize canvas - đảm bảo canvas có kích thước đúng
+        function forceResizeCanvas() {
+            const container = document.querySelector('.chart-area');
+            if (!container) return;
+            
             const dpr = window.devicePixelRatio || 1;
             const rect = container.getBoundingClientRect();
             
-            // Set canvas size in display pixels
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
+            // Đảm bảo container có kích thước hợp lệ
+            const containerWidth = Math.max(rect.width, 100);
+            const containerHeight = Math.max(rect.height, 100);
             
-            // Scale context to account for device pixel ratio
+            // Set canvas size in display pixels
+            canvas.width = containerWidth * dpr;
+            canvas.height = containerHeight * dpr;
+            
+            // Reset scale and save context state
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.scale(dpr, dpr);
             
             // Set canvas CSS size to match container
-            canvas.style.width = `${rect.width}px`;
-            canvas.style.height = `${rect.height}px`;
+            canvas.style.width = `${containerWidth}px`;
+            canvas.style.height = `${containerHeight}px`;
+            
+            console.log(`Canvas resized: ${canvas.width/dpr}x${canvas.height/dpr}px (DPR: ${dpr})`);
             
             // Draw initial grid
             drawGrid();
+            
+            // Redraw waveform if we have data
+            if (ecgSamples.length > 0 && !isPaused) {
+                drawECGWaveform();
+            }
+        }
+        
+        // Set up multiple resize listeners for maximum compatibility
+        function setupResizeListeners() {
+            // Debounced resize function
+            function debouncedResize() {
+                if (resizeTimeout) {
+                    clearTimeout(resizeTimeout);
+                }
+                resizeTimeout = setTimeout(() => {
+                    forceResizeCanvas();
+                }, 100);
+            }
+            
+            // Listen for window resize
+            window.addEventListener('resize', debouncedResize);
+            
+            // Also use ResizeObserver if available
+            if ('ResizeObserver' in window) {
+                try {
+                    const resizeObserver = new ResizeObserver(debouncedResize);
+                    const container = document.querySelector('.chart-area');
+                    if (container) {
+                        resizeObserver.observe(container);
+                        console.log('ResizeObserver activated');
+                    }
+                } catch (error) {
+                    console.warn('ResizeObserver error:', error);
+                }
+            }
+            
+            // Force resize on orientation change
+            window.addEventListener('orientationchange', () => {
+                setTimeout(forceResizeCanvas, 150);
+            });
         }
         
         // Draw ECG grid with improved resolution
         function drawGrid() {
-            const width = canvas.width / (window.devicePixelRatio || 1);
-            const height = canvas.height / (window.devicePixelRatio || 1);
+            if (!canvas || !ctx) return;
             
+            const dpr = window.devicePixelRatio || 1;
+            const width = canvas.width / dpr;
+            const height = canvas.height / dpr;
+            
+            // Clear canvas
             ctx.clearRect(0, 0, width, height);
             
             // Background gradient
@@ -694,6 +726,12 @@
             ctx.fillText('1 mV', 50, 20);
             ctx.textAlign = 'left';
             ctx.fillText('Time →', width - 50, height - 10);
+            
+            // Debug info
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.font = '9px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(`${Math.round(width)}x${Math.round(height)}px`, 10, height - 10);
         }
         
         // Update device information display
@@ -812,10 +850,11 @@
         
         // Draw ECG waveform with improved performance
         function drawECGWaveform() {
-            if (ecgSamples.length < 2 || isPaused) return;
+            if (!canvas || !ctx || ecgSamples.length < 2 || isPaused) return;
             
-            const width = canvas.width / (window.devicePixelRatio || 1);
-            const height = canvas.height / (window.devicePixelRatio || 1);
+            const dpr = window.devicePixelRatio || 1;
+            const width = canvas.width / dpr;
+            const height = canvas.height / dpr;
             const centerY = height / 2;
             const scale = 0.0008; // Adjusted scale for better visualization
             const pixelsPerSample = width / Math.min(ecgSamples.length, MAX_DATA_POINTS);
@@ -1061,6 +1100,12 @@
                 updateStatus('Not Supported', 'error');
                 scanBtn.disabled = true;
             }
+            
+            // Test resize by forcing one after a short delay
+            setTimeout(() => {
+                forceResizeCanvas();
+                console.log('Initial resize complete');
+            }, 500);
         };
         
         // Clean up on page unload
@@ -1068,8 +1113,19 @@
             if (animationFrameId) {
                 cancelAnimationFrame(animationFrameId);
             }
+            if (resizeTimeout) {
+                clearTimeout(resizeTimeout);
+            }
             if (device && device.gatt.connected) {
                 device.gatt.disconnect();
+            }
+        });
+        
+        // Manual resize button for debugging (optional)
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'r') {
+                forceResizeCanvas();
+                console.log('Manual canvas resize triggered');
             }
         });
     </script>
