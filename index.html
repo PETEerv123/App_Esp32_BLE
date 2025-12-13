@@ -5,16 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real-time ECG Monitor</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-blue: #0a1f53;
             --secondary-blue: #1a3b8b;
             --accent-red: #e53935;
             --accent-green: #2ac145;
+            --accent-yellow: #ffc107;
             --light-gray: #f5f7fa;
             --medium-gray: #e3e2df;
             --text-dark: #333333;
             --text-light: #ffffff;
+            --gradient-primary: linear-gradient(135deg, #0a1f53, #1a3b8b);
+            --gradient-success: linear-gradient(135deg, #2ac145, #4CAF50);
+            --gradient-warning: linear-gradient(135deg, #ff9800, #ff5722);
+            --gradient-danger: linear-gradient(135deg, #e53935, #c62828);
         }
 
         * {
@@ -36,15 +42,15 @@
             max-width: 1400px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            grid-template-rows: auto auto 1fr;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto auto 1fr;
             gap: 20px;
         }
 
         /* Header */
         .header {
             grid-column: 1 / -1;
-            background: var(--primary-blue);
+            background: var(--gradient-primary);
             color: var(--text-light);
             padding: 25px 30px;
             border-radius: 15px;
@@ -77,8 +83,9 @@
             gap: 8px;
             font-weight: 600;
             background: rgba(255, 255, 255, 0.15);
-            padding: 8px 15px;
+            padding: 8px 20px;
             border-radius: 20px;
+            backdrop-filter: blur(10px);
         }
 
         .pulse-dot {
@@ -102,7 +109,8 @@
             background: white;
             border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         .panel-title {
@@ -128,10 +136,16 @@
         }
 
         .info-card {
-            background: var(--light-gray);
-            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 18px;
             border-radius: 10px;
             border-left: 4px solid var(--secondary-blue);
+            transition: transform 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .info-label {
@@ -140,6 +154,9 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .info-value {
@@ -158,9 +175,9 @@
         }
 
         .btn {
-            padding: 14px 25px;
+            padding: 16px 25px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
@@ -168,17 +185,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             flex: 1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .btn-scan {
-            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-blue));
+            background: var(--gradient-primary);
             color: white;
         }
 
         .btn-disconnect {
-            background: linear-gradient(135deg, #ff6b6b, var(--accent-red));
+            background: var(--gradient-danger);
             color: white;
         }
 
@@ -188,8 +206,91 @@
         }
 
         .btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Device List Modal */
+        .device-list-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .device-list-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .device-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .device-list-header h3 {
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .device-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .device-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: var(--light-gray);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .device-item:hover {
+            background: #e3e2df;
+            border-left-color: var(--secondary-blue);
+        }
+
+        .device-name {
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+        }
+
+        .device-id {
+            font-size: 0.9rem;
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+
+        .device-rssi {
+            font-size: 0.85rem;
+            color: #888;
         }
 
         /* Vital Stats */
@@ -206,21 +307,35 @@
             border-radius: 15px;
             padding: 25px 20px;
             text-align: center;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .hr-icon { color: var(--accent-red); }
+        .bat-icon { color: var(--accent-green); }
+        .accel-icon { color: var(--secondary-blue); }
 
         .stat-value {
             font-size: 2.8rem;
             font-weight: 700;
-            color: var(--accent-red);
             line-height: 1;
             margin: 10px 0;
         }
+
+        .hr-value { color: var(--accent-red); }
+        .bat-value { color: var(--accent-green); }
+        .accel-value { color: var(--secondary-blue); }
 
         .stat-label {
             font-size: 1rem;
@@ -230,16 +345,23 @@
             font-weight: 600;
         }
 
+        .stat-unit {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 5px;
+        }
+
         /* ECG Chart */
         .ecg-chart-container {
             grid-column: 1 / -1;
             grid-row: 3;
-            background: var(--primary-blue);
+            background: var(--gradient-primary);
             border-radius: 15px;
             padding: 30px;
-            box-shadow: 0 10px 30px rgba(10, 31, 83, 0.3);
+            box-shadow: 0 15px 35px rgba(10, 31, 83, 0.3);
             margin-top: 10px;
             position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .chart-header {
@@ -255,6 +377,9 @@
             color: white;
             font-size: 1.8rem;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .chart-controls {
@@ -264,18 +389,22 @@
         }
 
         .chart-btn {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 15px;
-            border-radius: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .chart-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
         }
 
         #ecgCanvas {
@@ -283,26 +412,54 @@
             height: 350px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
+            backdrop-filter: blur(5px);
         }
 
         /* Data Log */
         .data-log-container {
-            grid-column: 1;
+            grid-column: 1 / -1;
             grid-row: 4;
             background: white;
             border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
         .log-title {
             font-size: 1.3rem;
             color: var(--primary-blue);
-            margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        .log-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .log-btn {
+            background: var(--light-gray);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--primary-blue);
+            transition: all 0.3s ease;
+        }
+
+        .log-btn:hover {
+            background: #e3e2df;
         }
 
         #dataArea {
@@ -317,8 +474,14 @@
         }
 
         .log-entry {
-            padding: 8px 0;
+            padding: 10px 0;
             border-bottom: 1px solid var(--medium-gray);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .log-entry:last-child {
@@ -328,11 +491,57 @@
         .timestamp {
             color: #666;
             font-size: 0.85rem;
+            margin-bottom: 5px;
         }
 
         .log-data {
             color: var(--primary-blue);
             font-weight: 600;
+        }
+
+        /* Battery Indicator */
+        .battery-indicator {
+            width: 60px;
+            height: 25px;
+            border: 2px solid var(--accent-green);
+            border-radius: 5px;
+            position: relative;
+            margin: 10px auto;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .battery-level {
+            height: 100%;
+            background: var(--gradient-success);
+            transition: width 0.5s ease;
+        }
+
+        .battery-tip {
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 12px;
+            background: var(--accent-green);
+            border-radius: 0 3px 3px 0;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--secondary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Responsive */
@@ -359,6 +568,12 @@
             .connection-buttons {
                 flex-direction: column;
             }
+            .chart-controls {
+                flex-wrap: wrap;
+            }
+            .header-title h1 {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
@@ -368,7 +583,7 @@
         <!-- Header -->
         <header class="header">
             <div class="header-title">
-                <h1>❤️ <span>Real-time</span> ECG Monitor</h1>
+                <h1><i class="fas fa-heartbeat"></i> <span>Real-time</span> ECG Monitor</h1>
                 <div class="live-indicator">
                     <div class="pulse-dot"></div>
                     <span id="connectionStatusText">Ready to Connect</span>
@@ -379,34 +594,39 @@
         <!-- Control Panel with Device Info -->
         <section class="control-panel">
             <div class="panel-title">
-                <h2>📱 Device Control & Information</h2>
+                <i class="fas fa-microchip"></i>
+                <h2>Device Control & Information</h2>
             </div>
             
             <div class="device-info-grid">
                 <div class="info-card">
-                    <div class="info-label">Device Name</div>
+                    <div class="info-label"><i class="fas fa-tag"></i> Device Name</div>
                     <div class="info-value" id="deviceName">Not Connected</div>
                 </div>
                 <div class="info-card">
-                    <div class="info-label">Device ID / MAC Address</div>
+                    <div class="info-label"><i class="fas fa-id-card"></i> Device MAC Address</div>
                     <div class="info-value" id="deviceId">--:--:--:--:--:--</div>
                 </div>
                 <div class="info-card">
-                    <div class="info-label">Service UUID</div>
-                    <div class="info-value" id="serviceUUID">0x0259 (Heart Rate Service)</div>
+                    <div class="info-label"><i class="fas fa-battery-three-quarters"></i> Battery Level</div>
+                    <div class="info-value" id="batteryPercent">--%</div>
+                    <div class="battery-indicator">
+                        <div class="battery-level" id="batteryLevel"></div>
+                        <div class="battery-tip"></div>
+                    </div>
                 </div>
                 <div class="info-card">
-                    <div class="info-label">Characteristic UUID</div>
-                    <div class="info-value" id="charUUID">0x2A37 (Heart Rate Measurement)</div>
+                    <div class="info-label"><i class="fas fa-signal"></i> Signal Strength</div>
+                    <div class="info-value" id="signalStrength">-- dBm</div>
                 </div>
             </div>
 
             <div class="connection-buttons">
                 <button class="btn btn-scan" id="scanBtn">
-                    🔍 SCAN BLE DEVICE
+                    <i class="fas fa-bluetooth"></i> SCAN DEVICES
                 </button>
                 <button class="btn btn-disconnect" id="disconnectBtn" disabled>
-                    ✖️ DISCONNECT
+                    <i class="fas fa-plug"></i> DISCONNECT
                 </button>
             </div>
         </section>
@@ -414,29 +634,47 @@
         <!-- Vital Stats -->
         <section class="vital-stats">
             <div class="stat-card">
+                <div class="stat-icon hr-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
                 <div class="stat-label">Heart Rate</div>
-                <div class="stat-value" id="hrValue">--</div>
-                <div class="stat-unit">bpm</div>
+                <div class="stat-value hr-value" id="hrValue">--</div>
+                <div class="stat-unit">beats per minute</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Battery Level</div>
-                <div class="stat-value" id="batValue">--</div>
-                <div class="stat-unit">%</div>
+                <div class="stat-icon bat-icon">
+                    <i class="fas fa-battery-full"></i>
+                </div>
+                <div class="stat-label">Battery</div>
+                <div class="stat-value bat-value" id="batValue">--</div>
+                <div class="stat-unit">% remaining</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Acceleration</div>
-                <div class="stat-value" id="accelValue">--</div>
-                <div class="stat-unit">g</div>
+                <div class="stat-icon accel-icon">
+                    <i class="fas fa-running"></i>
+                </div>
+                <div class="stat-label">Activity</div>
+                <div class="stat-value accel-value" id="accelValue">--</div>
+                <div class="stat-unit">G-force</div>
             </div>
         </section>
 
         <!-- ECG Chart -->
         <section class="ecg-chart-container">
             <div class="chart-header">
-                <div class="chart-title">📈 Live ECG Signal</div>
+                <div class="chart-title">
+                    <i class="fas fa-chart-line"></i> Live ECG Signal
+                </div>
                 <div class="chart-controls">
-                    <button class="chart-btn" id="clearChartBtn">Clear Chart</button>
-                    <button class="chart-btn" id="exportBtn">Export Data</button>
+                    <button class="chart-btn" id="clearChartBtn">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                    <button class="chart-btn" id="pauseBtn">
+                        <i class="fas fa-pause"></i> Pause
+                    </button>
+                    <button class="chart-btn" id="exportBtn">
+                        <i class="fas fa-download"></i> Export
+                    </button>
                 </div>
             </div>
             <canvas id="ecgCanvas"></canvas>
@@ -444,46 +682,83 @@
 
         <!-- Data Log -->
         <section class="data-log-container">
-            <div class="log-title">📊 Data Stream Log</div>
+            <div class="log-header">
+                <div class="log-title">
+                    <i class="fas fa-stream"></i> Data Stream Log
+                </div>
+                <div class="log-controls">
+                    <button class="log-btn" id="clearLogBtn">Clear Log</button>
+                    <button class="log-btn" id="autoScrollBtn">Auto-scroll</button>
+                </div>
+            </div>
             <div id="dataArea">
                 <div class="log-entry">
-                    <div class="timestamp">[System]</div>
-                    <div class="log-data">Waiting for BLE connection...</div>
+                    <div class="timestamp">[System] Waiting for BLE connection...</div>
+                    <div class="log-data">Ready to scan and connect to ECG device</div>
                 </div>
             </div>
         </section>
     </div>
 
+    <!-- Device List Modal -->
+    <div class="device-list-modal" id="deviceModal">
+        <div class="device-list-content">
+            <div class="device-list-header">
+                <h3><i class="fas fa-bluetooth"></i> Available BLE Devices</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="device-list" id="deviceList">
+                <div class="spinner"></div>
+            </div>
+            <div class="connection-buttons">
+                <button class="btn btn-scan" id="refreshDevicesBtn">
+                    <i class="fas fa-sync-alt"></i> REFRESH LIST
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Constants
-        const SERVICE_UUID = 0x0259;  // Heart Rate Service (16-bit)
-        const CHAR_UUID = 0x2A37;     // Heart Rate Measurement Characteristic (16-bit)
+        // Constants - Sửa UUID thành tiêu chuẩn BLE hoặc để trống để scan tất cả
+        const SERVICE_UUID = '0259';  // UUID custom của bạn
+        const CHAR_UUID = '2A37';     // Heart Rate Measurement Characteristic
 
         // Global variables
         let device = null;
         let server = null;
         let service = null;
         let characteristic = null;
-        let ecgSamples = [];  // Array of 50 ECG samples
+        let ecgSamples = [];
         const MAX_DATA_POINTS = 300;
-        let currentSampleIndex = 0;
         let canvas, ctx;
         let isConnected = false;
+        let isPaused = false;
+        let autoScroll = true;
+        let devices = [];
+        let scanInProgress = false;
 
         // DOM Elements
         const scanBtn = document.getElementById('scanBtn');
         const disconnectBtn = document.getElementById('disconnectBtn');
         const clearChartBtn = document.getElementById('clearChartBtn');
         const exportBtn = document.getElementById('exportBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const clearLogBtn = document.getElementById('clearLogBtn');
+        const autoScrollBtn = document.getElementById('autoScrollBtn');
         const connectionStatusText = document.getElementById('connectionStatusText');
         const deviceName = document.getElementById('deviceName');
         const deviceId = document.getElementById('deviceId');
-        const serviceUUID = document.getElementById('serviceUUID');
-        const charUUID = document.getElementById('charUUID');
+        const batteryPercent = document.getElementById('batteryPercent');
+        const batteryLevel = document.getElementById('batteryLevel');
+        const signalStrength = document.getElementById('signalStrength');
         const hrValue = document.getElementById('hrValue');
         const batValue = document.getElementById('batValue');
         const accelValue = document.getElementById('accelValue');
         const dataArea = document.getElementById('dataArea');
+        const deviceModal = document.getElementById('deviceModal');
+        const deviceList = document.getElementById('deviceList');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const refreshDevicesBtn = document.getElementById('refreshDevicesBtn');
         
         // Initialize Canvas
         function initCanvas() {
@@ -502,13 +777,17 @@
         function drawGrid() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Background
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.05)');
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0.02)');
+            ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             // Vertical lines (every 50px = 250ms at 200px/sec)
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = 1;
+            ctx.setLineDash([5, 3]);
             
             for (let x = 0; x < canvas.width; x += 50) {
                 ctx.beginPath();
@@ -525,6 +804,8 @@
                 ctx.stroke();
             }
             
+            ctx.setLineDash([]);
+            
             // Center line
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
             ctx.lineWidth = 2;
@@ -535,17 +816,37 @@
         }
         
         // Update device information display
-        function updateDeviceInfo(deviceObj) {
+        function updateDeviceInfo(deviceObj, rssi = null) {
             deviceName.textContent = deviceObj.name || 'ECG Device';
+            deviceId.textContent = deviceObj.id || '--:--:--:--:--:--';
             
-            // Display device ID (or MAC address if available)
-            if (deviceObj.id) {
-                deviceId.textContent = deviceObj.id;
+            if (rssi !== null) {
+                signalStrength.textContent = `${rssi} dBm`;
             }
             
             // Update connection status
             connectionStatusText.textContent = 'Connected';
             connectionStatusText.style.color = '#2ac145';
+        }
+        
+        // Update battery display
+        function updateBatteryDisplay(batteryLevel) {
+            const batteryPercentValue = Math.min(Math.max(batteryLevel, 0), 100);
+            batValue.textContent = batteryPercentValue;
+            batteryPercent.textContent = `${batteryPercentValue}%`;
+            
+            // Update battery indicator
+            const batteryElement = document.getElementById('batteryLevel');
+            batteryElement.style.width = `${batteryPercentValue}%`;
+            
+            // Change color based on battery level
+            if (batteryPercentValue > 50) {
+                batteryElement.style.background = 'var(--gradient-success)';
+            } else if (batteryPercentValue > 20) {
+                batteryElement.style.background = 'var(--gradient-warning)';
+            } else {
+                batteryElement.style.background = 'var(--gradient-danger)';
+            }
         }
         
         // Parse ECG data from buffer
@@ -581,7 +882,7 @@
                     heartRate: hr,
                     rrInterval: rr,
                     battery: battery,
-                    accelerometer: accel / 1000.0, // Convert back to g
+                    accelerometer: accel / 1000.0,
                     ecgSamples: ecgSamples,
                     timestamp: Date.now()
                 };
@@ -593,11 +894,11 @@
         
         // Process ECG data packet
         function processECGPacket(parsedData) {
-            if (!parsedData) return;
+            if (!parsedData || isPaused) return;
             
             // Update real-time values
             hrValue.textContent = parsedData.heartRate;
-            batValue.textContent = parsedData.battery;
+            updateBatteryDisplay(parsedData.battery);
             accelValue.textContent = parsedData.accelerometer.toFixed(2);
             
             // Add all 50 ECG samples to display
@@ -606,6 +907,7 @@
                     sample: sample,
                     hr: parsedData.heartRate,
                     battery: parsedData.battery,
+                    accelerometer: parsedData.accelerometer,
                     timestamp: Date.now()
                 });
                 
@@ -618,52 +920,56 @@
             // Redraw ECG waveform
             drawECGWaveform();
             
-            // Update data log (only log once per packet, not 50 times)
+            // Update data log
             updateDataLog(parsedData);
         }
         
         // Draw ECG waveform
         function drawECGWaveform() {
-            if (ecgSamples.length < 2) return;
+            if (ecgSamples.length < 2 || isPaused) return;
             
             // Clear and redraw grid
             drawGrid();
             
             const centerY = canvas.height / 2;
-            const scale = 0.001; // Scale factor for ECG values
-            const timeScale = 2; // Pixels per ms
+            const scale = 0.001;
+            const timeScale = 2;
             
-            // Draw ECG line with gradient
+            // Create gradient for ECG line
             const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-            gradient.addColorStop(0, '#ff6b6b');
-            gradient.addColorStop(0.5, '#e53935');
-            gradient.addColorStop(1, '#c62828');
+            gradient.addColorStop(0, 'rgba(255, 107, 107, 0.8)');
+            gradient.addColorStop(0.5, 'rgba(229, 57, 53, 0.9)');
+            gradient.addColorStop(1, 'rgba(198, 40, 40, 0.8)');
             
             ctx.strokeStyle = gradient;
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
             ctx.lineJoin = 'round';
             ctx.lineCap = 'round';
             ctx.beginPath();
             
-            // Start from right (newest data)
-            const startX = canvas.width;
-            let x = startX;
+            // Draw the waveform from left to right
+            const step = canvas.width / Math.min(ecgSamples.length, MAX_DATA_POINTS);
+            let x = 0;
             
-            for (let i = ecgSamples.length - 1; i >= 0; i--) {
+            for (let i = Math.max(0, ecgSamples.length - MAX_DATA_POINTS); i < ecgSamples.length; i++) {
                 const y = centerY - (ecgSamples[i].sample * scale);
                 
-                if (i === ecgSamples.length - 1) {
+                if (i === Math.max(0, ecgSamples.length - MAX_DATA_POINTS)) {
                     ctx.moveTo(x, y);
                 } else {
                     ctx.lineTo(x, y);
                 }
                 
-                x -= timeScale * 20; // 20ms per sample
-                
-                if (x < 0) break;
+                x += step;
             }
             
             ctx.stroke();
+            
+            // Add glow effect
+            ctx.shadowColor = 'rgba(229, 57, 53, 0.5)';
+            ctx.shadowBlur = 10;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
         }
         
         // Update data log
@@ -677,48 +983,107 @@
             const logEntry = document.createElement('div');
             logEntry.className = 'log-entry';
             logEntry.innerHTML = `
-                <div class="timestamp">[${time}]</div>
-                <div class="log-data">HR: ${parsedData.heartRate} bpm | Battery: ${parsedData.battery}% | Accel: ${parsedData.accelerometer.toFixed(2)}g | Samples: ${parsedData.ecgSamples.length}</div>
+                <div class="timestamp">[${time}] Packet received</div>
+                <div class="log-data">HR: ${parsedData.heartRate} bpm | Battery: ${parsedData.battery}% | Activity: ${parsedData.accelerometer.toFixed(2)}g</div>
             `;
             dataArea.insertBefore(logEntry, dataArea.firstChild);
             
-            // Keep only last 20 entries
+            // Keep only last 50 entries
             const entries = dataArea.querySelectorAll('.log-entry');
-            if (entries.length > 20) {
+            if (entries.length > 50) {
                 dataArea.removeChild(entries[entries.length - 1]);
+            }
+            
+            // Auto-scroll to top
+            if (autoScroll) {
+                dataArea.scrollTop = 0;
             }
         }
         
-        // Connect to BLE device
-        scanBtn.onclick = async () => {
+        // Show device list modal
+        function showDeviceList() {
+            deviceModal.style.display = 'flex';
+            refreshDeviceList();
+        }
+        
+        // Hide device list modal
+        function hideDeviceList() {
+            deviceModal.style.display = 'none';
+        }
+        
+        // Refresh device list
+        async function refreshDeviceList() {
+            if (scanInProgress) return;
+            
+            scanInProgress = true;
+            deviceList.innerHTML = '<div class="spinner"></div>';
+            
             try {
-                updateStatus('Scanning for devices...', 'scanning');
-                
-                // Request BLE device connection
-                device = await navigator.bluetooth.requestDevice({
-                    filters: [{ services: [SERVICE_UUID] }],
+                // Scan for BLE devices
+                devices = await navigator.bluetooth.requestDevice({
+                    filters: [{ name: 'ECG Device' }], // Tìm device có tên ECG Device
                     optionalServices: [SERVICE_UUID]
                 });
                 
-                // Update device info display
-                updateDeviceInfo(device);
+                displayDevices();
+            } catch (error) {
+                console.error('Error scanning devices:', error);
+                deviceList.innerHTML = `<div style="text-align: center; color: #666; padding: 20px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p>${error.message}</p>
+                </div>`;
+            } finally {
+                scanInProgress = false;
+            }
+        }
+        
+        // Display found devices
+        function displayDevices() {
+            deviceList.innerHTML = '';
+            
+            if (devices.length === 0) {
+                deviceList.innerHTML = `<div style="text-align: center; color: #666; padding: 20px;">
+                    <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p>No BLE devices found</p>
+                    <p style="font-size: 0.9rem; margin-top: 10px;">Make sure your ECG device is powered on and in pairing mode</p>
+                </div>`;
+                return;
+            }
+            
+            devices.forEach(deviceInfo => {
+                const deviceItem = document.createElement('div');
+                deviceItem.className = 'device-item';
+                deviceItem.innerHTML = `
+                    <div class="device-name">
+                        <i class="fas fa-heartbeat"></i> ${deviceInfo.name || 'Unknown Device'}
+                    </div>
+                    <div class="device-id">${deviceInfo.id || 'Unknown ID'}</div>
+                    ${deviceInfo.rssi ? `<div class="device-rssi">Signal: ${deviceInfo.rssi} dBm</div>` : ''}
+                `;
+                
+                deviceItem.onclick = () => connectToDevice(deviceInfo);
+                deviceList.appendChild(deviceItem);
+            });
+        }
+        
+        // Connect to selected device
+        async function connectToDevice(selectedDevice) {
+            try {
+                hideDeviceList();
                 updateStatus('Connecting...', 'connecting');
                 
                 // Handle disconnection
-                device.addEventListener('gattserverdisconnected', () => {
+                selectedDevice.addEventListener('gattserverdisconnected', () => {
                     updateStatus('Disconnected', 'disconnected');
                     isConnected = false;
                     scanBtn.disabled = false;
                     disconnectBtn.disabled = true;
                     
-                    dataArea.innerHTML = `<div class="log-entry">
-                        <div class="timestamp">[System]</div>
-                        <div class="log-data">Device disconnected</div>
-                    </div>` + dataArea.innerHTML;
+                    addLogEntry('Device disconnected');
                 });
                 
                 // Connect to GATT server
-                server = await device.gatt.connect();
+                server = await selectedDevice.gatt.connect();
                 updateStatus('Connected', 'connected');
                 isConnected = true;
                 
@@ -728,7 +1093,7 @@
                 // Get characteristic
                 characteristic = await service.getCharacteristic(CHAR_UUID);
                 
-                // Start notifications (server pushes data)
+                // Start notifications
                 await characteristic.startNotifications();
                 
                 // Handle incoming data
@@ -741,74 +1106,42 @@
                     }
                 });
                 
-                // Enable/disable buttons
+                // Update UI
+                updateDeviceInfo(selectedDevice);
                 scanBtn.disabled = true;
                 disconnectBtn.disabled = false;
                 
                 // Log connection success
-                dataArea.innerHTML = `<div class="log-entry">
-                    <div class="timestamp">[System]</div>
-                    <div class="log-data">Connected to ${device.name || 'ECG Device'}</div>
-                </div>` + dataArea.innerHTML;
+                addLogEntry(`Connected to ${selectedDevice.name || 'ECG Device'}`);
                 
             } catch (error) {
                 updateStatus('Connection Failed', 'error');
-                alert(`Error: ${error.message}`);
-                console.error('Bluetooth error:', error);
+                alert(`Error connecting: ${error.message}`);
+                console.error('Connection error:', error);
+                addLogEntry(`Connection failed: ${error.message}`);
             }
-        };
+        }
         
-        // Disconnect from device
-        disconnectBtn.onclick = () => {
-            if (device && device.gatt.connected) {
-                device.gatt.disconnect();
-            }
-            updateStatus('Disconnected', 'disconnected');
-            scanBtn.disabled = false;
-            disconnectBtn.disabled = true;
-        };
-        
-        // Clear chart
-        clearChartBtn.onclick = () => {
-            ecgSamples = [];
-            drawGrid();
-            dataArea.innerHTML = `<div class="log-entry">
-                <div class="timestamp">[System]</div>
-                <div class="log-data">Chart cleared</div>
-            </div>`;
-        };
-        
-        // Export data
-        exportBtn.onclick = () => {
-            if (ecgSamples.length === 0) {
-                alert('No data to export');
-                return;
-            }
-            
-            // Create CSV content
-            let csvContent = "Timestamp,Heart Rate (bpm),Battery (%),ECG Value (μV)\n";
-            
-            ecgSamples.forEach(point => {
-                const time = new Date(point.timestamp).toLocaleTimeString();
-                csvContent += `${time},${point.hr},${point.battery},${point.sample}\n`;
+        // Add log entry
+        function addLogEntry(message) {
+            const time = new Date().toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
             });
             
-            // Create download link
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `ecg_data_${new Date().toISOString().slice(0,10)}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <div class="timestamp">[${time}]</div>
+                <div class="log-data">${message}</div>
+            `;
+            dataArea.insertBefore(logEntry, dataArea.firstChild);
             
-            dataArea.innerHTML = `<div class="log-entry">
-                <div class="timestamp">[System]</div>
-                <div class="log-data">Data exported (${ecgSamples.length} samples)</div>
-            </div>` + dataArea.innerHTML;
-        };
+            if (autoScroll) {
+                dataArea.scrollTop = 0;
+            }
+        }
         
         // Update connection status
         function updateStatus(message, status) {
@@ -836,10 +1169,82 @@
             }
         }
         
+        // Event Listeners
+        scanBtn.onclick = showDeviceList;
+        disconnectBtn.onclick = () => {
+            if (device && device.gatt.connected) {
+                device.gatt.disconnect();
+            }
+            updateStatus('Disconnected', 'disconnected');
+            scanBtn.disabled = false;
+            disconnectBtn.disabled = true;
+            addLogEntry('Manually disconnected');
+        };
+        
+        clearChartBtn.onclick = () => {
+            ecgSamples = [];
+            drawGrid();
+            addLogEntry('Chart cleared');
+        };
+        
+        exportBtn.onclick = () => {
+            if (ecgSamples.length === 0) {
+                alert('No data to export');
+                return;
+            }
+            
+            let csvContent = "Timestamp,Heart Rate (bpm),Battery (%),Activity (g),ECG Value (μV)\n";
+            
+            ecgSamples.forEach(point => {
+                const time = new Date(point.timestamp).toLocaleString();
+                csvContent += `${time},${point.hr},${point.battery},${point.accelerometer},${point.sample}\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ecg_data_${new Date().toISOString().slice(0,10)}_${new Date().getHours()}${new Date().getMinutes()}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            addLogEntry(`Data exported (${ecgSamples.length} samples)`);
+        };
+        
+        pauseBtn.onclick = () => {
+            isPaused = !isPaused;
+            pauseBtn.innerHTML = isPaused ? 
+                '<i class="fas fa-play"></i> Resume' : 
+                '<i class="fas fa-pause"></i> Pause';
+            addLogEntry(isPaused ? 'Chart paused' : 'Chart resumed');
+        };
+        
+        clearLogBtn.onclick = () => {
+            dataArea.innerHTML = '<div class="log-entry"><div class="timestamp">[System] Log cleared</div><div class="log-data">Log entries cleared</div></div>';
+        };
+        
+        autoScrollBtn.onclick = () => {
+            autoScroll = !autoScroll;
+            autoScrollBtn.textContent = autoScroll ? 'Auto-scroll: ON' : 'Auto-scroll: OFF';
+        };
+        
+        closeModalBtn.onclick = hideDeviceList;
+        refreshDevicesBtn.onclick = refreshDeviceList;
+        
+        // Close modal when clicking outside
+        window.onclick = (event) => {
+            if (event.target === deviceModal) {
+                hideDeviceList();
+            }
+        };
+        
         // Initialize on load
         window.onload = () => {
             initCanvas();
             updateStatus('Ready to Connect', 'disconnected');
+            updateBatteryDisplay(0);
             
             // Handle window resize
             window.onresize = () => {
@@ -848,6 +1253,13 @@
                     drawECGWaveform();
                 }
             };
+            
+            // Check for Web Bluetooth API support
+            if (!navigator.bluetooth) {
+                alert('Web Bluetooth API is not supported in this browser. Please use Chrome/Edge on desktop or Android.');
+                updateStatus('Not Supported', 'error');
+                scanBtn.disabled = true;
+            }
         };
     </script>
 </body>
