@@ -349,6 +349,44 @@
             display: block;
         }
 
+        /* Scale Controls */
+        .scale-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .scale-slider {
+            width: 100px;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .scale-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-red);
+            cursor: pointer;
+        }
+
+        .scale-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-red);
+            cursor: pointer;
+            border: none;
+        }
+
         /* Battery Indicator */
         .battery-indicator {
             width: 50px;
@@ -532,6 +570,10 @@
             <div class="chart-header">
                 <div class="chart-title">
                     <i class="fas fa-chart-line"></i> Live ECG Signal
+                    <div class="scale-controls">
+                        <span id="scaleValue">Auto-scale: ON</span>
+                        <input type="range" min="1" max="100" value="50" class="scale-slider" id="scaleSlider">
+                    </div>
                 </div>
                 <div class="chart-controls">
                     <button class="chart-btn" id="clearChartBtn">
@@ -570,6 +612,18 @@
         let lastDrawTime = 0;
         const DRAW_INTERVAL = 16; // ~60 FPS
         let resizeTimeout = null;
+        
+        // Auto-scale variables
+        let autoScaleEnabled = true;
+        let manualScale = 1.0;
+        let scaleSlider = document.getElementById('scaleSlider');
+        let scaleValue = document.getElementById('scaleValue');
+        
+        // Statistics for auto-scaling
+        let minValue = Infinity;
+        let maxValue = -Infinity;
+        let dataRange = 0;
+        let currentScale = 0.0008;
 
         // DOM Elements
         const scanBtn = document.getElementById('scanBtn');
@@ -587,7 +641,7 @@
         const batValue = document.getElementById('batValue');
         const accelValue = document.getElementById('accelValue');
         
-        // Initialize Canvas with proper resize handling - FIXED VERSION
+        // Initialize Canvas with proper resize handling
         function initCanvas() {
             canvas = document.getElementById('ecgCanvas');
             ctx = canvas.getContext('2d');
@@ -595,11 +649,40 @@
             // Force initial resize
             forceResizeCanvas();
             
-            // Set up multiple resize listeners for maximum compatibility
+            // Set up resize listeners
             setupResizeListeners();
+            
+            // Set up scale slider
+            setupScaleControls();
         }
         
-        // Force resize canvas - đảm bảo canvas có kích thước đúng
+        // Set up scale controls
+        function setupScaleControls() {
+            scaleSlider.addEventListener('input', function() {
+                manualScale = this.value / 50; // Convert 1-100 to 0.02-2.0
+                autoScaleEnabled = false;
+                scaleValue.textContent = `Scale: ${manualScale.toFixed(2)}x`;
+                
+                // Redraw if we have data
+                if (ecgSamples.length > 0 && !isPaused) {
+                    drawECGWaveform();
+                }
+            });
+            
+            // Double click slider to reset to auto-scale
+            scaleSlider.addEventListener('dblclick', function() {
+                autoScaleEnabled = true;
+                this.value = 50;
+                manualScale = 1.0;
+                scaleValue.textContent = 'Auto-scale: ON';
+                
+                if (ecgSamples.length > 0 && !isPaused) {
+                    drawECGWaveform();
+                }
+            });
+        }
+        
+        // Force resize canvas
         function forceResizeCanvas() {
             const container = document.querySelector('.chart-area');
             if (!container) return;
@@ -607,7 +690,7 @@
             const dpr = window.devicePixelRatio || 1;
             const rect = container.getBoundingClientRect();
             
-            // Đảm bảo container có kích thước hợp lệ
+            // Ensure container has valid size
             const containerWidth = Math.max(rect.width, 100);
             const containerHeight = Math.max(rect.height, 100);
             
@@ -623,8 +706,6 @@
             canvas.style.width = `${containerWidth}px`;
             canvas.style.height = `${containerHeight}px`;
             
-            console.log(`Canvas resized: ${canvas.width/dpr}x${canvas.height/dpr}px (DPR: ${dpr})`);
-            
             // Draw initial grid
             drawGrid();
             
@@ -634,9 +715,8 @@
             }
         }
         
-        // Set up multiple resize listeners for maximum compatibility
+        // Set up multiple resize listeners
         function setupResizeListeners() {
-            // Debounced resize function
             function debouncedResize() {
                 if (resizeTimeout) {
                     clearTimeout(resizeTimeout);
@@ -646,30 +726,26 @@
                 }, 100);
             }
             
-            // Listen for window resize
             window.addEventListener('resize', debouncedResize);
             
-            // Also use ResizeObserver if available
             if ('ResizeObserver' in window) {
                 try {
                     const resizeObserver = new ResizeObserver(debouncedResize);
                     const container = document.querySelector('.chart-area');
                     if (container) {
                         resizeObserver.observe(container);
-                        console.log('ResizeObserver activated');
                     }
                 } catch (error) {
                     console.warn('ResizeObserver error:', error);
                 }
             }
             
-            // Force resize on orientation change
             window.addEventListener('orientationchange', () => {
                 setTimeout(forceResizeCanvas, 150);
             });
         }
         
-        // Draw ECG grid with improved resolution
+        // Draw ECG grid
         function drawGrid() {
             if (!canvas || !ctx) return;
             
@@ -727,11 +803,62 @@
             ctx.textAlign = 'left';
             ctx.fillText('Time →', width - 50, height - 10);
             
-            // Debug info
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            // Current scale info
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
             ctx.font = '9px Arial';
             ctx.textAlign = 'left';
-            ctx.fillText(`${Math.round(width)}x${Math.round(height)}px`, 10, height - 10);
+            ctx.fillText(`Scale: ${currentScale.toExponential(2)}`, 10, 20);
+            
+            // Data range info
+            if (dataRange > 0) {
+                ctx.fillText(`Range: ±${Math.round(dataRange/2)} μV`, 10, 35);
+            }
+        }
+        
+        // Calculate auto-scale factor based on data
+        function calculateAutoScale() {
+            if (ecgSamples.length < 2) {
+                return 0.0008; // Default scale
+            }
+            
+            // Get last N samples for scaling calculation
+            const samplesToCheck = Math.min(ecgSamples.length, 100);
+            const startIdx = ecgSamples.length - samplesToCheck;
+            
+            minValue = Infinity;
+            maxValue = -Infinity;
+            
+            // Find min and max in recent samples
+            for (let i = startIdx; i < ecgSamples.length; i++) {
+                const sample = ecgSamples[i].sample;
+                if (sample < minValue) minValue = sample;
+                if (sample > maxValue) maxValue = sample;
+            }
+            
+            // Calculate range
+            dataRange = Math.max(Math.abs(minValue), Math.abs(maxValue)) * 2;
+            
+            // Avoid division by zero
+            if (dataRange === 0) {
+                return 0.0008;
+            }
+            
+            // Calculate optimal scale to fit data in 80% of canvas height
+            const dpr = window.devicePixelRatio || 1;
+            const height = canvas.height / dpr;
+            const targetHeight = height * 0.8; // Use 80% of canvas height
+            
+            // Scale = canvasHeight / dataRange
+            let calculatedScale = targetHeight / dataRange;
+            
+            // Add some padding (10%)
+            calculatedScale *= 0.9;
+            
+            // Clamp scale to reasonable limits
+            const minScale = 0.0001;
+            const maxScale = 0.01;
+            
+            return Math.max(minScale, Math.min(maxScale, calculatedScale));
         }
         
         // Update device information display
@@ -848,7 +975,7 @@
             }
         }
         
-        // Draw ECG waveform with improved performance
+        // Draw ECG waveform with AUTO-SCALING
         function drawECGWaveform() {
             if (!canvas || !ctx || ecgSamples.length < 2 || isPaused) return;
             
@@ -856,8 +983,14 @@
             const width = canvas.width / dpr;
             const height = canvas.height / dpr;
             const centerY = height / 2;
-            const scale = 0.0008; // Adjusted scale for better visualization
             const pixelsPerSample = width / Math.min(ecgSamples.length, MAX_DATA_POINTS);
+            
+            // Calculate scale (auto or manual)
+            if (autoScaleEnabled) {
+                currentScale = calculateAutoScale();
+            } else {
+                currentScale = 0.0008 * manualScale;
+            }
             
             // Clear and redraw grid
             drawGrid();
@@ -874,19 +1007,19 @@
             ctx.lineCap = 'round';
             ctx.beginPath();
             
-            // Start from left to right for better performance
+            // Start from left to right
             const startIndex = Math.max(0, ecgSamples.length - MAX_DATA_POINTS);
             let x = 0;
             
             // Draw first point
             const firstSample = ecgSamples[startIndex];
-            const firstY = centerY - (firstSample.sample * scale);
+            const firstY = centerY - (firstSample.sample * currentScale);
             ctx.moveTo(x, firstY);
             
             // Draw remaining points
             for (let i = startIndex + 1; i < ecgSamples.length; i++) {
                 x += pixelsPerSample;
-                const y = centerY - (ecgSamples[i].sample * scale);
+                const y = centerY - (ecgSamples[i].sample * currentScale);
                 ctx.lineTo(x, y);
                 
                 // Break if we've filled the canvas
@@ -904,7 +1037,7 @@
             // Add current value indicator
             if (ecgSamples.length > 0) {
                 const lastSample = ecgSamples[ecgSamples.length - 1];
-                const lastY = centerY - (lastSample.sample * scale);
+                const lastY = centerY - (lastSample.sample * currentScale);
                 
                 // Draw indicator dot
                 ctx.fillStyle = '#ffffff';
@@ -955,17 +1088,11 @@
                 updateStatus('Connected', 'connected');
                 isConnected = true;
                 
-                // Debug: List all services
-                const services = await server.getPrimaryServices();
-                console.log('Available services:', services.map(s => s.uuid));
-                
                 // Get primary service
                 service = await server.getPrimaryService(SERVICE_UUID);
-                console.log('Service found:', service.uuid);
                 
                 // Get characteristic
                 characteristic = await service.getCharacteristic(CHAR_UUID);
-                console.log('Characteristic found:', characteristic.uuid);
                 
                 // Start notifications
                 await characteristic.startNotifications();
@@ -1022,6 +1149,9 @@
         // Clear chart
         clearChartBtn.onclick = () => {
             ecgSamples = [];
+            minValue = Infinity;
+            maxValue = -Infinity;
+            dataRange = 0;
             drawGrid();
         };
         
@@ -1101,10 +1231,9 @@
                 scanBtn.disabled = true;
             }
             
-            // Test resize by forcing one after a short delay
+            // Test resize
             setTimeout(() => {
                 forceResizeCanvas();
-                console.log('Initial resize complete');
             }, 500);
         };
         
@@ -1118,14 +1247,6 @@
             }
             if (device && device.gatt.connected) {
                 device.gatt.disconnect();
-            }
-        });
-        
-        // Manual resize button for debugging (optional)
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'r') {
-                forceResizeCanvas();
-                console.log('Manual canvas resize triggered');
             }
         });
     </script>
