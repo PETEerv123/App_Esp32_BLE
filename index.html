@@ -1168,7 +1168,7 @@
             }
 
             let csvContent =
-                "Timestamp,Heart Rate (bpm),Battery (%),Activity (g),ECG Value (μV)\n";
+                "Timestamp,Get Sample 50 (Hz),Heart Rate (bpm),Battery (%),Activity (g),ECG Value (μV)\n";
 
             ecgSamples.forEach((point, index) => {
                 const time = new Date(point.timestamp).toLocaleString();
@@ -1263,5 +1263,6 @@
     </script>
 </body>
 </html>
+
 
 
