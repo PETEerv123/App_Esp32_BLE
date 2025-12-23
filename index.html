@@ -8,15 +8,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-blue: #0a1f53;
-            --secondary-blue: #1a3b8b;
-            --accent-red: #e53935;
-            --accent-green: #2ac145;
-            --light-gray: #f5f7fa;
+            --primary-blue: #4A6FA5;
+            --secondary-blue: #6B8CC6;
+            --accent-red: #E63946;
+            --accent-green: #2A9D8F;
+            --light-blue: #E9F1F7;
+            --light-gray: #F8F9FA;
+            --white: #FFFFFF;
             --text-dark: #333333;
-            --text-light: #ffffff;
-            --gradient-primary: linear-gradient(135deg, #0a1f53, #1a3b8b);
-            --gradient-secondary: linear-gradient(135deg, #1a3b8b, #0a1f53);
+            --text-light: #666666;
+            --gradient-light: linear-gradient(135deg, #E9F1F7 0%, #F8F9FA 100%);
+            --gradient-blue: linear-gradient(135deg, #4A6FA5 0%, #6B8CC6 100%);
+            --gradient-green: linear-gradient(135deg, #2A9D8F 0%, #38B2AC 100%);
         }
 
         * {
@@ -26,8 +29,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: var(--white);
             color: var(--text-dark);
             line-height: 1.6;
             min-height: 100vh;
@@ -41,7 +44,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--gradient-primary);
+            background: var(--gradient-blue);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -57,7 +60,7 @@
 
         .loading-heart {
             font-size: 4rem;
-            color: var(--accent-red);
+            color: var(--white);
             margin-bottom: 20px;
             animation: heartbeat 1.5s infinite;
         }
@@ -84,7 +87,7 @@
 
         .progress-fill {
             height: 100%;
-            background: var(--accent-green);
+            background: var(--white);
             width: 0%;
             transition: width 0.3s ease;
         }
@@ -98,10 +101,10 @@
 
         /* Navigation */
         .navbar {
-            background: var(--gradient-primary);
-            color: var(--text-light);
+            background: var(--white);
+            color: var(--primary-blue);
             padding: 15px 30px;
-            box-shadow: 0 4px 20px rgba(10, 31, 83, 0.2);
+            box-shadow: 0 2px 15px rgba(74, 111, 165, 0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -124,6 +127,7 @@
         .logo h1 {
             font-size: 1.8rem;
             font-weight: 700;
+            color: var(--primary-blue);
         }
 
         .logo span {
@@ -136,21 +140,23 @@
         }
 
         .nav-link {
-            color: var(--text-light);
+            color: var(--primary-blue);
             text-decoration: none;
             font-weight: 600;
             padding: 8px 16px;
-            border-radius: 5px;
+            border-radius: 20px;
             transition: all 0.3s ease;
             font-size: 1rem;
         }
 
         .nav-link:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: var(--light-blue);
+            color: var(--primary-blue);
         }
 
         .nav-link.active {
-            background: rgba(255, 255, 255, 0.25);
+            background: var(--primary-blue);
+            color: white;
         }
 
         /* Hero Section */
@@ -159,8 +165,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--gradient-primary);
-            color: white;
+            background: var(--gradient-light);
+            color: var(--primary-blue);
             position: relative;
             overflow: hidden;
             padding: 40px 20px;
@@ -177,7 +183,8 @@
             font-size: 3.2rem;
             margin-bottom: 20px;
             line-height: 1.2;
-            font-weight: 800;
+            font-weight: 700;
+            color: var(--primary-blue);
         }
 
         .hero-title span {
@@ -187,7 +194,7 @@
         .hero-subtitle {
             font-size: 1.4rem;
             margin-bottom: 30px;
-            opacity: 0.95;
+            color: var(--text-light);
             max-width: 800px;
             margin-left: auto;
             margin-right: auto;
@@ -214,37 +221,36 @@
             align-items: center;
             gap: 12px;
             text-decoration: none;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
         .btn-primary {
             background: var(--accent-red);
             color: white;
-            box-shadow: 0 10px 25px rgba(229, 57, 53, 0.4);
+            box-shadow: 0 10px 25px rgba(230, 57, 70, 0.3);
         }
 
         .btn-primary:hover {
             background: #ff5252;
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(229, 57, 53, 0.5);
+            box-shadow: 0 15px 30px rgba(230, 57, 70, 0.4);
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: var(--white);
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: var(--light-blue);
             transform: translateY(-5px);
         }
 
         /* About Team Section */
         .team-section {
             padding: 80px 30px;
-            background: white;
+            background: var(--white);
         }
 
         .section-title {
@@ -262,7 +268,7 @@
         .section-subtitle {
             text-align: center;
             font-size: 1.2rem;
-            color: #666;
+            color: var(--text-light);
             max-width: 800px;
             margin: 0 auto 50px;
             line-height: 1.6;
@@ -294,7 +300,7 @@
             width: 120px;
             height: 120px;
             border-radius: 50%;
-            background: var(--gradient-primary);
+            background: var(--gradient-blue);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -318,7 +324,7 @@
         }
 
         .member-description {
-            color: #666;
+            color: var(--text-light);
             line-height: 1.6;
             font-size: 1rem;
         }
@@ -326,8 +332,7 @@
         /* Features Section */
         .features-section {
             padding: 80px 30px;
-            background: var(--gradient-secondary);
-            color: white;
+            background: var(--light-blue);
         }
 
         .features-grid {
@@ -339,18 +344,18 @@
         }
 
         .feature-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--white);
             border-radius: 15px;
             padding: 40px 30px;
             text-align: center;
             transition: transform 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         .feature-card:hover {
             transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
 
         .feature-icon {
@@ -362,11 +367,12 @@
         .feature-title {
             font-size: 1.5rem;
             margin-bottom: 15px;
+            color: var(--primary-blue);
             font-weight: 700;
         }
 
         .feature-description {
-            opacity: 0.9;
+            color: var(--text-light);
             line-height: 1.6;
             font-size: 1.05rem;
         }
@@ -374,7 +380,7 @@
         /* How It Works Section */
         .how-it-works {
             padding: 80px 30px;
-            background: white;
+            background: var(--white);
         }
 
         .steps-container {
@@ -405,7 +411,7 @@
             font-size: 1.8rem;
             font-weight: bold;
             margin: 0 auto 25px;
-            box-shadow: 0 8px 20px rgba(229, 57, 53, 0.3);
+            box-shadow: 0 8px 20px rgba(230, 57, 70, 0.2);
         }
 
         .step-title {
@@ -416,7 +422,7 @@
         }
 
         .step-description {
-            color: #666;
+            color: var(--text-light);
             line-height: 1.6;
             font-size: 1.05rem;
         }
@@ -424,7 +430,7 @@
         /* Technology Section */
         .tech-section {
             padding: 80px 30px;
-            background: var(--light-gray);
+            background: var(--gradient-light);
         }
 
         .tech-grid {
@@ -436,12 +442,13 @@
         }
 
         .tech-item {
-            background: white;
+            background: var(--white);
             border-radius: 15px;
             padding: 30px;
             text-align: center;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease;
+            border: 1px solid rgba(74, 111, 165, 0.1);
         }
 
         .tech-item:hover {
@@ -464,7 +471,7 @@
         /* CTA Section */
         .cta-section {
             padding: 100px 30px;
-            background: var(--gradient-primary);
+            background: var(--gradient-blue);
             color: white;
             text-align: center;
         }
@@ -486,7 +493,7 @@
 
         /* Footer */
         .footer {
-            background: #0a1930;
+            background: var(--primary-blue);
             color: white;
             padding: 60px 30px 30px;
         }
@@ -502,7 +509,7 @@
         .footer-section h3 {
             font-size: 1.4rem;
             margin-bottom: 20px;
-            color: var(--accent-red);
+            color: white;
             font-weight: 700;
         }
 
@@ -665,16 +672,16 @@
             <div class="hero-content">
                 <h1 class="hero-title">HỆ THỐNG GIÁM SÁT ECG <span>THỜI GIAN THỰC</span></h1>
                 <p class="hero-subtitle">
-                    Giải pháp theo dõi điện tâm đồ tiên tiến với khả năng hiển thị trực quan, 
-                    phân tích nhịp tim chuyên sâu và đánh giá toàn diện sức khỏe tim mạch. 
-                    Kết nối thiết bị ECG Bluetooth và giám sát hoạt động tim với độ chính xác chuyên nghiệp.
+                    Giải pháp theo dõi điện tâm đồ tiên tiến với công nghệ Web Bluetooth, 
+                    hiển thị trực quan và phân tích chuyên sâu. Kết nối không dây với thiết bị 
+                    ECG và giám sát sức khỏe tim mạch với độ chính xác cao.
                 </p>
                 <div class="hero-buttons">
-                    <a href="index.html" class="btn btn-primary">
-                        <i class="fas fa-play-circle"></i> Bắt Đầu Giám Sát
+                    <a href="Monitoring.html" class="btn btn-primary" onclick="trackNavigation()">
+                        <i class="fas fa-play-circle"></i> Vào Trang Giám Sát
                     </a>
-                    <a href="#features" class="btn btn-secondary">
-                        <i class="fas fa-info-circle"></i> Tìm Hiểu Thêm
+                    <a href="#tech" class="btn btn-secondary">
+                        <i class="fas fa-code"></i> Xem Công Nghệ
                     </a>
                 </div>
             </div>
@@ -684,8 +691,8 @@
         <section class="team-section" id="team">
             <h2 class="section-title">ĐỘI NGŨ <span>PHÁT TRIỂN</span></h2>
             <p class="section-subtitle">
-                Dự án được phát triển bởi nhóm sinh viên và chuyên gia y tế với mục tiêu 
-                mang đến giải pháp giám sát tim mạch hiệu quả và dễ tiếp cận.
+                Dự án được phát triển bởi nhóm sinh viên và chuyên gia với sự kết hợp giữa 
+                y học và công nghệ thông tin.
             </p>
             <div class="team-container">
                 <div class="team-member">
@@ -695,8 +702,8 @@
                     <h3 class="member-name">TS. Nguyễn Văn A</h3>
                     <p class="member-role">Chuyên gia Tim mạch</p>
                     <p class="member-description">
-                        Chuyên gia với 15 năm kinh nghiệm trong lĩnh vực điện tâm đồ và 
-                        chẩn đoán bệnh tim mạch. Giảng viên chính tại Đại học Y Hà Nội.
+                        15 năm kinh nghiệm trong lĩnh vực điện tâm đồ và chẩn đoán bệnh tim mạch. 
+                        Giảng viên Đại học Y Hà Nội.
                     </p>
                 </div>
                 
@@ -707,8 +714,8 @@
                     <h3 class="member-name">ThS. Trần Thị B</h3>
                     <p class="member-role">Trưởng nhóm Phát triển</p>
                     <p class="member-description">
-                        Chuyên gia phần mềm y tế với 8 năm kinh nghiệm phát triển ứng dụng 
-                        giám sát sức khỏe và hệ thống IoT trong y tế.
+                        Chuyên gia phát triển phần mềm y tế với 8 năm kinh nghiệm. 
+                        Chuyên môn về Web Application và IoT trong y tế.
                     </p>
                 </div>
                 
@@ -719,8 +726,8 @@
                     <h3 class="member-name">KS. Phạm Văn C</h3>
                     <p class="member-role">Kỹ sư Phần cứng</p>
                     <p class="member-description">
-                        Chuyên gia thiết kế và phát triển thiết bị y tế di động với 10 năm 
-                        kinh nghiệm trong lĩnh vực thiết bị điện tử y tế.
+                        Chuyên gia thiết kế thiết bị y tế di động với 10 năm kinh nghiệm 
+                        trong lĩnh vực điện tử y tế và IoT.
                     </p>
                 </div>
             </div>
@@ -729,8 +736,8 @@
         <!-- Features Section -->
         <section class="features-section" id="features">
             <h2 class="section-title">TÍNH NĂNG <span>NỔI BẬT</span></h2>
-            <p class="section-subtitle" style="color: rgba(255,255,255,0.9);">
-                Hệ thống tích hợp các tính năng tiên tiến hỗ trợ giám sát và phân tích điện tâm đồ toàn diện.
+            <p class="section-subtitle">
+                Ứng dụng tích hợp các công nghệ tiên tiến cho giám sát điện tâm đồ toàn diện.
             </p>
             <div class="features-grid">
                 <div class="feature-card">
@@ -739,8 +746,8 @@
                     </div>
                     <h3 class="feature-title">Hiển Thị ECG Thời Gian Thực</h3>
                     <p class="feature-description">
-                        Hiển thị trực quan dạng sóng ECG với khả năng điều chỉnh độ khuếch đại 
-                        và thang thời gian. Hiển thị rõ ràng sóng P, QRS, và T để phân tích chính xác.
+                        Hiển thị dạng sóng ECG trực tiếp với công nghệ Canvas, 
+                        hỗ trợ zoom và điều chỉnh độ khuếch đại.
                     </p>
                 </div>
                 
@@ -748,21 +755,21 @@
                     <div class="feature-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <h3 class="feature-title">Phân Tích Nâng Cao</h3>
+                    <h3 class="feature-title">Phân Tích Dữ Liệu</h3>
                     <p class="feature-description">
-                        Phân tích biến thiên nhịp tim (HRV) toàn diện, theo dõi khoảng RR và 
-                        thống kê thời gian thực bao gồm giá trị tối thiểu, tối đa và trung bình.
+                        Tính toán tự động nhịp tim, khoảng RR, và các chỉ số sức khỏe 
+                        tim mạch quan trọng.
                     </p>
                 </div>
                 
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-bluetooth"></i>
+                        <i class="fas fa-bluetooth-b"></i>
                     </div>
-                    <h3 class="feature-title">Kết Nối Không Dây</h3>
+                    <h3 class="feature-title">Web Bluetooth API</h3>
                     <p class="feature-description">
-                        Kết nối Bluetooth liền mạch với thiết bị ECG. Tự động phát hiện thiết bị 
-                        và ghép nối với giám sát cường độ tín hiệu.
+                        Kết nối không dây trực tiếp từ trình duyệt đến thiết bị ECG 
+                        mà không cần cài đặt ứng dụng.
                     </p>
                 </div>
                 
@@ -770,10 +777,10 @@
                     <div class="feature-icon">
                         <i class="fas fa-download"></i>
                     </div>
-                    <h3 class="feature-title">Xuất Dữ Liệu</h3>
+                    <h3 class="feature-title">Xuất Dữ Liệu CSV</h3>
                     <p class="feature-description">
-                        Xuất dữ liệu ECG định dạng CSV để phân tích sâu trong các ứng dụng bên ngoài. 
-                        Bao gồm dấu thời gian, nhịp tim, khoảng RR và giá trị ECG thô.
+                        Xuất dữ liệu ECG định dạng CSV để phân tích chuyên sâu với 
+                        các công cụ như MATLAB, Python, hoặc Excel.
                     </p>
                 </div>
             </div>
@@ -783,42 +790,42 @@
         <section class="how-it-works" id="how-it-works">
             <h2 class="section-title">CÁCH THỨC <span>HOẠT ĐỘNG</span></h2>
             <p class="section-subtitle">
-                Hệ thống được thiết kế đơn giản, dễ sử dụng với 4 bước cơ bản để bắt đầu giám sát.
+                Quy trình đơn giản 4 bước để bắt đầu giám sát điện tâm đồ.
             </p>
             <div class="steps-container">
                 <div class="step">
                     <div class="step-number">1</div>
                     <h3 class="step-title">Kết Nối Thiết Bị</h3>
                     <p class="step-description">
-                        Ghép nối cảm biến ECG Bluetooth với hệ thống. Đảm bảo thiết bị 
-                        được bật nguồn và ở chế độ ghép nối.
+                        Ghép nối thiết bị ECG Bluetooth với trình duyệt sử dụng 
+                        công nghệ Web Bluetooth API.
                     </p>
                 </div>
                 
                 <div class="step">
                     <div class="step-number">2</div>
-                    <h3 class="step-title">Bắt Đầu Giám Sát</h3>
+                    <h3 class="step-title">Bắt Đầu Thu Nhận</h3>
                     <p class="step-description">
-                        Nhấp "Bắt Đầu Giám Sát" để bắt đầu thu thập dữ liệu thời gian thực. 
-                        Hệ thống sẽ tự động thiết lập kết nối.
+                        Hệ thống tự động thu nhận dữ liệu ECG và hiển thị 
+                        dạng sóng thời gian thực.
                     </p>
                 </div>
                 
                 <div class="step">
                     <div class="step-number">3</div>
-                    <h3 class="step-title">Phân Tích Dữ Liệu</h3>
+                    <h3 class="step-title">Phân Tích & Giám Sát</h3>
                     <p class="step-description">
-                        Xem dạng sóng ECG trực tiếp và thống kê sức khỏe toàn diện bao gồm 
-                        nhịp tim, khoảng RR và trạng thái pin.
+                        Theo dõi các chỉ số sức khỏe, phân tích biến thiên nhịp tim, 
+                        và cảnh báo bất thường.
                     </p>
                 </div>
                 
                 <div class="step">
                     <div class="step-number">4</div>
-                    <h3 class="step-title">Xuất Kết Quả</h3>
+                    <h3 class="step-title">Lưu Trữ & Xuất</h3>
                     <p class="step-description">
-                        Lưu dữ liệu phiên giám sát của bạn để phân tích ngoại tuyến hoặc 
-                        hồ sơ y tế.
+                        Lưu trữ dữ liệu và xuất file CSV để phân tích sâu hoặc 
+                        chia sẻ với chuyên gia y tế.
                     </p>
                 </div>
             </div>
@@ -828,14 +835,21 @@
         <section class="tech-section" id="tech">
             <h2 class="section-title">CÔNG NGHỆ <span>SỬ DỤNG</span></h2>
             <p class="section-subtitle">
-                Hệ thống được xây dựng trên nền tảng công nghệ hiện đại, đảm bảo hiệu suất và độ tin cậy cao.
+                Ứng dụng được xây dựng trên nền tảng web hiện đại với các công nghệ tiên tiến.
             </p>
             <div class="tech-grid">
                 <div class="tech-item">
                     <div class="tech-icon">
                         <i class="fab fa-html5"></i>
                     </div>
-                    <h4 class="tech-name">HTML5 & CSS3</h4>
+                    <h4 class="tech-name">HTML5</h4>
+                </div>
+                
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fab fa-css3-alt"></i>
+                    </div>
+                    <h4 class="tech-name">CSS3</h4>
                 </div>
                 
                 <div class="tech-item">
@@ -861,29 +875,36 @@
                 
                 <div class="tech-item">
                     <div class="tech-icon">
-                        <i class="fab fa-github"></i>
+                        <i class="fas fa-mobile-alt"></i>
                     </div>
-                    <h4 class="tech-name">Git Version Control</h4>
+                    <h4 class="tech-name">Responsive Design</h4>
                 </div>
                 
                 <div class="tech-item">
                     <div class="tech-icon">
-                        <i class="fas fa-mobile-alt"></i>
+                        <i class="fab fa-git-alt"></i>
                     </div>
-                    <h4 class="tech-name">Responsive Design</h4>
+                    <h4 class="tech-name">Git</h4>
+                </div>
+                
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h4 class="tech-name">Client-side Only</h4>
                 </div>
             </div>
         </section>
 
         <!-- CTA Section -->
         <section class="cta-section">
-            <h2 class="cta-title">SẴN SÀNG BẮT ĐẦU?</h2>
+            <h2 class="cta-title">SẴN SÀNG TRẢI NGHIỆM?</h2>
             <p class="cta-subtitle">
-                Trải nghiệm hệ thống giám sát ECG thời gian thực với giao diện trực quan và 
-                tính năng phân tích chuyên sâu. Hoàn toàn miễn phí và dễ sử dụng.
+                Khám phá hệ thống giám sát ECG thời gian thực với giao diện trực quan 
+                và công nghệ hiện đại. Không cần cài đặt, hoạt động trực tiếp trên trình duyệt.
             </p>
             <div class="hero-buttons">
-                <a href="Monitoring.html" class="btn btn-primary" style="font-size: 1.3rem; padding: 18px 50px;">
+                <a href="Monitoring.html" class="btn btn-primary" onclick="trackNavigation()" style="font-size: 1.3rem; padding: 18px 50px; background: white; color: var(--primary-blue); border: 2px solid white;">
                     <i class="fas fa-rocket"></i> Vào Trang Giám Sát Ngay
                 </a>
             </div>
@@ -895,51 +916,49 @@
                 <div class="footer-section">
                     <h3>ECG Health Monitor</h3>
                     <p>
-                        Hệ thống giám sát điện tâm đồ thời gian thực tiên tiến dành cho chuyên gia y tế 
-                        và cá nhân. Giám sát, phân tích và xuất dữ liệu ECG với độ chính xác cao.
+                        Hệ thống giám sát điện tâm đồ thời gian thực sử dụng công nghệ Web. 
+                        Dự án nghiên cứu ứng dụng công nghệ trong y tế.
                     </p>
                     <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
                         <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-researchgate"></i></a>
+                        <a href="#" class="social-link"><i class="fas fa-graduation-cap"></i></a>
+                        <a href="#" class="social-link"><i class="fas fa-paper-plane"></i></a>
                     </div>
                 </div>
                 
                 <div class="footer-section">
-                    <h3>Liên Kết Nhanh</h3>
+                    <h3>Liên Kết</h3>
                     <p><a href="#home" style="color: white; text-decoration: none; opacity: 0.8; display: block; margin-bottom: 8px;">Trang Chủ</a></p>
                     <p><a href="#team" style="color: white; text-decoration: none; opacity: 0.8; display: block; margin-bottom: 8px;">Đội Ngũ</a></p>
-                    <p><a href="#features" style="color: white; text-decoration: none; opacity: 0.8; display: block; margin-bottom: 8px;">Tính Năng</a></p>
-                    <p><a href="#how-it-works" style="color: white; text-decoration: none; opacity: 0.8; display: block; margin-bottom: 8px;">Hướng Dẫn</a></p>
                     <p><a href="#tech" style="color: white; text-decoration: none; opacity: 0.8; display: block; margin-bottom: 8px;">Công Nghệ</a></p>
+                    <p><a href="Monitoring.html" style="color: white; text-decoration: none; opacity: 0.8; display: block; margin-bottom: 8px;" onclick="trackNavigation()">Trang Giám Sát</a></p>
                 </div>
                 
                 <div class="footer-section">
-                    <h3>Thông Tin Liên Hệ</h3>
+                    <h3>Thông Tin</h3>
                     <p><i class="fas fa-envelope" style="margin-right: 10px;"></i> contact@ecgmonitor.com</p>
-                    <p><i class="fas fa-phone" style="margin-right: 10px;"></i> +84 123 456 789</p>
-                    <p><i class="fas fa-map-marker-alt" style="margin-right: 10px;"></i> Số 123, Đường ABC, Quận XYZ, TP.HCM</p>
-                    <p><i class="fas fa-university" style="margin-right: 10px;"></i> Đại học Y Dược Thành phố Hồ Chí Minh</p>
+                    <p><i class="fas fa-university" style="margin-right: 10px;"></i> Đại học Y Dược TP.HCM</p>
+                    <p><i class="fas fa-map-marker-alt" style="margin-right: 10px;"></i> 217 Hồng Bàng, Quận 5, TP.HCM</p>
+                    <p><i class="fas fa-calendar-alt" style="margin-right: 10px;"></i> Dự án 2023</p>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; 2023 ECG Health Monitor. Bản quyền thuộc về nhóm phát triển. | Thiết kế cho xuất sắc trong chăm sóc sức khỏe</p>
-                <p style="margin-top: 10px;">Dự án nghiên cứu khoa học - Phát triển ứng dụng y tế số</p>
+                <p>&copy; 2023 ECG Health Monitor - Dự án Nghiên cứu Ứng dụng Công nghệ Y tế</p>
+                <p style="margin-top: 10px;">Phát triển bởi nhóm Sinh viên & Chuyên gia</p>
             </div>
         </footer>
     </div>
 
     <script>
-        // Loading screen animation
+
         window.onload = function() {
             const loadingScreen = document.getElementById('loadingScreen');
             const progressFill = document.getElementById('progressFill');
             const mainContainer = document.getElementById('mainContainer');
             
-            // Simulate loading progress
+
             let progress = 0;
             const interval = setInterval(() => {
                 progress += Math.random() * 15;
@@ -947,7 +966,7 @@
                     progress = 100;
                     clearInterval(interval);
                     
-                    // Hide loading screen
+
                     setTimeout(() => {
                         loadingScreen.style.opacity = '0';
                         setTimeout(() => {
@@ -963,18 +982,17 @@
             }, 100);
         };
 
-        // Navigation handling
+        
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-                
-                // Remove active class from all links
+
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 
-                // Add active class to clicked link
+
                 this.classList.add('active');
                 
-                // Scroll to section
+
                 const targetId = this.getAttribute('href');
                 if (targetId && targetId !== '#') {
                     const targetElement = document.querySelector(targetId);
@@ -987,6 +1005,15 @@
                 }
             });
         });
+
+        function trackNavigation() {
+            console.log('Navigating to monitor page...');
+
+            event.target.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang chuyển...';
+            setTimeout(() => {
+                event.target.innerHTML = '<i class="fas fa-rocket"></i> Vào Trang Giám Sát Ngay';
+            }, 1000);
+        }
 
         // Smooth scrolling for all anchor links
         document.addEventListener('DOMContentLoaded', function() {
@@ -1007,7 +1034,6 @@
             });
         });
 
-        // Add animation to elements when they come into view
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
@@ -1022,13 +1048,21 @@
             });
         }, observerOptions);
 
-        // Observe elements for animation
+
         document.querySelectorAll('.team-member, .feature-card, .step, .tech-item').forEach(el => {
             el.style.opacity = '0';
             el.style.transform = 'translateY(20px)';
             el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
             observer.observe(el);
         });
+
+        function checkMonitorPage() {
+
+            console.log('Monitor page should exist as index.html in the same directory');
+        }
+
+        // Call on page load
+        checkMonitorPage();
     </script>
 </body>
 </html>
