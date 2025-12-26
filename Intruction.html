@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hướng Dẫn - ECG Health Monitor</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --blue: #4A6FA5;
+            --red: #E63946;
+            --light: rgba(255, 255, 255, 0.85);
+            --dark: #222;
+            --white: #ffffff;
+            --green: #2A9D8F;
+            --purple: #9D4EDD;
+            --orange: #F4A261;
+            --yellow: #FFC107;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.9)),
+                        url('https://sv2.anhsieuviet.com/2025/12/25/kynguyen2.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .nav-left h1 {
+            font-size: 1.6rem;
+            color: var(--blue);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-right a {
+            margin-left: 15px;
+            text-decoration: none;
+            color: var(--white);
+            background: var(--blue);
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            border: 2px solid var(--blue);
+        }
+
+        .nav-right a:hover {
+            background: var(--white);
+            color: var(--blue);
+        }
+
+        .nav-right a.active {
+            background: var(--red);
+            border-color: var(--red);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        main {
+            max-width: 1200px;
+            width: 90%;
+            margin: 40px auto 60px;
+            background: var(--light);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(5px);
+            flex-grow: 1;
+        }
+
+        /* ===== PHẦN TIÊU ĐỀ CHÍNH ===== */
+        .main-title {
+            text-align: center;
+            color: var(--blue);
+            margin-bottom: 10px;
+            font-size: 2.4rem;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--red);
+            display: inline-block;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #444;
+            margin-top: 20px;
+            font-weight: 500;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ===== GIỚI THIỆU HƯỚNG DẪN ===== */
+        .intro-section {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9ff, #eef2ff);
+            border-radius: 12px;
+            border-left: 5px solid var(--green);
+        }
+
+        .intro-section h2 {
+            color: var(--blue);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .intro-section p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #444;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, var(--blue), #2c4a7a);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 20px;
+            box-shadow: 0 6px 15px rgba(74, 111, 165, 0.3);
+        }
+
+        /* ===== TIMELINE HƯỚNG DẪN 4 BƯỚC ===== */
+        .steps-timeline {
+            position: relative;
+            margin: 50px 0;
+            padding: 20px 0;
+        }
+
+        .steps-timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--blue), var(--green), var(--orange));
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .step-item {
+            position: relative;
+            margin-bottom: 50px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .step-item:nth-child(odd) {
+            flex-direction: row;
+        }
+
+        .step-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .step-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            width: 45%;
+            border-top: 4px solid var(--blue);
+            transition: transform 0.3s ease;
+        }
+
+        .step-item:nth-child(2) .step-content {
+            border-top-color: var(--green);
+        }
+
+        .step-item:nth-child(3) .step-content {
+            border-top-color: var(--orange);
+        }
+
+        .step-item:nth-child(4) .step-content {
+            border-top-color: var(--purple);
+        }
+
+        .step-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .step-number {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: var(--blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(74, 111, 165, 0.3);
+            z-index: 10;
+        }
+
+        .step-item:nth-child(2) .step-number {
+            background: var(--green);
+        }
+
+        .step-item:nth-child(3) .step-number {
+            background: var(--orange);
+        }
+
+        .step-item:nth-child(4) .step-number {
+            background: var(--purple);
+        }
+
+        .step-icon {
+            font-size: 2.5rem;
+            color: var(--blue);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .step-item:nth-child(2) .step-icon {
+            color: var(--green);
+        }
+
+        .step-item:nth-child(3) .step-icon {
+            color: var(--orange);
+        }
+
+        .step-item:nth-child(4) .step-icon {
+            color: var(--purple);
+        }
+
+        .step-title {
+            color: var(--blue);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .step-item:nth-child(2) .step-title {
+            color: var(--green);
+        }
+
+        .step-item:nth-child(3) .step-title {
+            color: var(--orange);
+        }
+
+        .step-item:nth-child(4) .step-title {
+            color: var(--purple);
+        }
+
+        .step-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .step-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 15px;
+        }
+
+        .step-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .step-list li:last-child {
+            border-bottom: none;
+        }
+
+        .step-list i {
+            color: var(--green);
+            margin-right: 10px;
+            margin-top: 3px;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        /* ===== PHẦN LƯU Ý QUAN TRỌNG ===== */
+        .important-notes {
+            background: linear-gradient(135deg, #fff8e1, #fff3cd);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 50px 0;
+            border-left: 5px solid var(--yellow);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .important-notes h2 {
+            color: var(--blue);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .important-notes h2 i {
+            color: var(--yellow);
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .note-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+            border-top: 3px solid var(--yellow);
+        }
+
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .note-card i {
+            font-size: 2rem;
+            color: var(--yellow);
+            margin-bottom: 15px;
+            text-align: center;
+            display: block;
+        }
+
+        .note-card h4 {
+            color: var(--blue);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .note-card p {
+            color: #555;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        /* ===== PHẦN HỎI ĐÁP (FAQ) ===== */
+        .faq-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 50px 0;
+            border-left: 5px solid var(--blue);
+        }
+
+        .faq-section h2 {
+            color: var(--blue);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .faq-question {
+            padding: 20px;
+            font-weight: 600;
+            color: var(--blue);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: #f0f7ff;
+        }
+
+        .faq-question i {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 20px;
+            max-height: 500px;
+        }
+
+        .faq-answer p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+
+        .footer-container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 35px 20px;
+            text-align: center;
+            color: #555;
+        }
+
+        .footer-container h4 {
+            color: var(--blue);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .footer-container p {
+            margin: 8px 0;
+            line-height: 1.6;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .university-highlight {
+            font-weight: bold;
+            color: var(--blue);
+            margin-top: 15px !important;
+        }
+
+        .footer-bottom {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: #777;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .steps-timeline::before {
+                left: 30px;
+            }
+            
+            .step-item {
+                flex-direction: row !important;
+                margin-left: 60px;
+            }
+            
+            .step-content {
+                width: 100%;
+            }
+            
+            .step-number {
+                left: 0;
+                transform: translateX(-50%);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .nav-right {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .nav-right a {
+                margin: 5px;
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            main {
+                padding: 25px;
+                width: 95%;
+                margin: 20px auto 40px;
+            }
+
+            .main-title {
+                font-size: 1.9rem;
+            }
+
+            .intro-section,
+            .important-notes,
+            .faq-section {
+                padding: 25px;
+            }
+            
+            .notes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 1.7rem;
+            }
+            
+            .step-content {
+                padding: 20px;
+            }
+            
+            .step-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ===== HEADER ===== -->
+    <header>
+        <div class="nav-left">
+            <h1><i class="fas fa-heartbeat"></i> ECG Health Monitor</h1>
+        </div>
+        <div class="nav-right">
+            <a href="index.html">Trang Chủ</a>
+            <a href="Monitoring.html">Trang Theo Dõi</a>
+            <a href="Feature_ifo.html">Tính Năng</a>
+            <a href="Intruction.html" class="active">Hướng Dẫn</a>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main>
+        <h1 class="main-title">HƯỚNG DẪN SỬ DỤNG</h1>
+        <p class="subtitle">
+            Quy trình đơn giản 4 bước để bắt đầu giám sát điện tâm đồ với hệ thống ECG Health Monitor
+        </p>
+
+        <!-- Giới thiệu hướng dẫn -->
+        <div class="intro-section">
+            <h2><i class="fas fa-graduation-cap"></i> Cách Thức Hoạt Động</h2>
+            <p>
+                ECG Health Monitor là hệ thống giám sát sức khỏe tim mạch tiên tiến, kết hợp thiết bị đeo thông minh 
+                và ứng dụng di động để cung cấp giải pháp theo dõi sức khỏe toàn diện. Chỉ với 4 bước đơn giản, 
+                bạn có thể bắt đầu theo dõi điện tâm đồ và nhịp tim của mình một cách chính xác.
+            </p>
+            <div class="highlight-box">
+                <i class="fas fa-lightbulb"></i> Mẹo: Đảm bảo thiết bị ECG được sạc đầy pin trước khi sử dụng và 
+                điện thoại của bạn đã bật Bluetooth để kết nối không dây ổn định.
+            </div>
+        </div>
+
+        <!-- Timeline 4 bước hướng dẫn -->
+        <div class="steps-timeline">
+            <!-- Bước 1 -->
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <div class="step-icon">
+                        <i class="fas fa-power-off"></i>
+                    </div>
+                    <h3 class="step-title">BƯỚC 1: KHỞI ĐỘNG THIẾT BỊ</h3>
+                    <p class="step-description">
+                        Bật thiết bị ECG và đeo đúng vị trí quanh ngực để bắt đầu theo dõi sức khỏe tim mạch.
+                    </p>
+                    <ul class="step-list">
+                        <li><i class="fas fa-check-circle"></i> Gạt nút nhấn để khởi động thiết bị</li>
+                        <li><i class="fas fa-check-circle"></i> Đeo thiết bị quanh ngực, đảm bảo tiếp xúc tốt với da</li>
+                        <li><i class="fas fa-check-circle"></i> Kiểm tra đèn LED báo hiệu khi led nhấp nháy , thiết bị đang hoạt động tốt</li>
+                        <li><i class="fas fa-check-circle"></i> Đảm bảo pin thiết bị trên 20% để hoạt động ổn định</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bước 2 -->
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <div class="step-icon">
+                        <i class="fas fa-bluetooth"></i>
+                    </div>
+                    <h3 class="step-title">BƯỚC 2: KẾT NỐI BLUETOOTH</h3>
+                    <p class="step-description">
+                        Kết nối thiết bị ECG với điện thoại thông minh qua công nghệ Bluetooth không dây.
+                    </p>
+                    <ul class="step-list">
+                        <li><i class="fas fa-check-circle"></i> Mở ứng dụng ECG Health Monitor trên điện thoại</li>
+                        <li><i class="fas fa-check-circle"></i> Truy cập trang "Theo Dõi" trong ứng dụng</li>
+                        <li><i class="fas fa-check-circle"></i> Nhấn nút "QUÉT THIẾT BỊ" để tìm thiết bị ECG</li>
+                        <li><i class="fas fa-check-circle"></i> Chọn thiết bị ECG từ danh sách để kết nối</li>
+                        <li><i class="fas fa-check-circle"></i> Xác nhận kết nối khi thấy trạng thái "Đã kết nối"</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bước 3 -->
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <div class="step-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="step-title">BƯỚC 3: THEO DÕI DỮ LIỆU</h3>
+                    <p class="step-description">
+                        Giám sát điện tâm đồ, nhịp tim và các thông số sức khỏe theo thời gian thực.
+                    </p>
+                    <ul class="step-list">
+                        <li><i class="fas fa-check-circle"></i> Quan sát biểu đồ ECG hiển thị tín hiệu tim theo thời gian thực</li>
+                        <li><i class="fas fa-check-circle"></i> Theo dõi nhịp tim hiện tại và lịch sử nhịp tim</li>
+                        <li><i class="fas fa-check-circle"></i> Kiểm tra mức pin thiết bị </li>
+                        <li><i class="fas fa-check-circle"></i> Sử dụng nút "Tạm dừng" nếu cần ngưng theo dõi tạm thời</li>
+                        <li><i class="fas fa-check-circle"></i> Điều chỉnh tỉ lệ hiển thị biểu đồ bằng thanh trượt Zoom</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bước 4 -->
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <div class="step-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3 class="step-title">BƯỚC 4: LƯU TRỮ & XUẤT DỮ LIỆU</h3>
+                    <p class="step-description">
+                        Lưu trữ dữ liệu sức khỏe và xuất báo cáo để chia sẻ với bác sĩ hoặc lưu trữ cá nhân.
+                    </p>
+                    <ul class="step-list">
+                        <li><i class="fas fa-check-circle"></i> Dữ liệu tự động được lưu trữ trong ứng dụng</li>
+                        <li><i class="fas fa-check-circle"></i> Nhấn nút "Xuất dữ liệu" để tải file CSV chứa toàn bộ dữ liệu ECG</li>
+                        <li><i class="fas fa-check-circle"></i> Chia sẻ file CSV với bác sĩ để phân tích chuyên sâu</li>
+                        <li><i class="fas fa-check-circle"></i> Sử dụng nút "Xóa" để xóa dữ liệu cũ khi cần</li>
+                        <li><i class="fas fa-check-circle"></i> Ngắt kết nối khi hoàn thành phiên theo dõi</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phần lưu ý quan trọng -->
+        <section class="important-notes">
+            <h2><i class="fas fa-exclamation-triangle"></i> LƯU Ý QUAN TRỌNG KHI SỬ DỤNG</h2>
+            <div class="notes-grid">
+                <div class="note-card">
+                    <i class="fas fa-user-shield"></i>
+                    <h4>AN TOÀN NGƯỜI DÙNG</h4>
+                    <p>Không sử dụng thiết bị khi tắm hoặc bơi. Thiết bị chống nước nhưng không chống nước hoàn toàn.</p>
+                </div>
+                
+                <div class="note-card">
+                    <i class="fas fa-battery-full"></i>
+                    <h4>QUẢN LÝ PIN</h4>
+                    <p>Sạc thiết bị khi pin dưới 20%. Thời gian sạc đầy khoảng 1 giờ, sử dụng được 24-48 giờ liên tục.</p>
+                </div>
+                
+                <div class="note-card">
+                    <i class="fas fa-heartbeat"></i>
+                    <h4>VỊ TRÍ ĐEO ĐÚNG</h4>
+                    <p>Đeo thiết bị ngang ngực, điện cực tiếp xúc trực tiếp với da để có tín hiệu ECG chính xác nhất.</p>
+                </div>
+                
+                <div class="note-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h4>KẾT NỐI ỔN ĐỊNH</h4>
+                    <p>Giữ điện thoại trong phạm vi 5m với thiết bị ECG để đảm bảo kết nối Bluetooth không bị gián đoạn.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Phần hỏi đáp (FAQ) -->
+        <section class="faq-section">
+            <h2><i class="fas fa-question-circle"></i> CÂU HỎI THƯỜNG GẶP (FAQ)</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Thiết bị ECG có tương thích với điện thoại của tôi không?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Hệ thống tương thích với hầu hết điện thoại thông minh chạy Android 8.0+ và iOS 12.0+ hỗ trợ Web Bluetooth API. Trình duyệt Chrome/Edge trên Android và iOS Safari đều được hỗ trợ.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Làm sao để biết thiết bị đang hoạt động bình thường?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Khi thiết bị kết nối thành công, đèn từ nhấp nháy sẽ chuyển sang sáng hẳn . Trong ứng dụng, trạng thái sẽ hiển thị "Đã kết nối" và biểu đồ ECG sẽ hiển thị tín hiệu ổn định.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Dữ liệu ECG của tôi được lưu trữ ở đâu và có an toàn không?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Dữ liệu được lưu trữ cục bộ trên điện thoại của bạn và chỉ được chia sẻ khi bạn chủ động xuất file. Hệ thống không tự động gửi dữ liệu lên đám mây, đảm bảo quyền riêng tư tối đa.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Tôi có thể sử dụng thiết bị trong bao lâu mỗi lần sạc?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Thiết bị có thể hoạt động liên tục 24-48 giờ sau mỗi lần sạc đầy, tùy thuộc vào cường độ sử dụng. Ứng dụng sẽ cảnh báo khi pin dưới 20% để bạn sạc kịp thời.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="footer-container">
+            <h4>ECG Health Monitor</h4>
+            <p>
+                Hệ thống đo điện tâm đồ & nhịp tim tích hợp cảm biến té ngã,
+                ứng dụng trí tuệ nhân tạo trong theo dõi và cảnh báo sức khỏe – một hướng nghiên cứu tiên phong
+                góp phần vào sự phát triển của y học chính xác.
+            </p>
+            <p class="university-highlight">
+                Khoa Điện - Điện tử – Điều Khiển & Tự Động Hóa<br>
+                Trường Đại học Sư Phạm Kỹ Thuật Thành phố Hồ Chí Minh
+            </p>
+            <div class="footer-bottom">
+                © 2025 – Đồ án tốt nghiệp | Nhóm thực hiện
+            </div>
+        </div>
+    </footer>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                
+                question.addEventListener('click', () => {
+                    // Đóng tất cả các item khác
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                    
+                    // Mở/đóng item hiện tại
+                    item.classList.toggle('active');
+                });
+            });
+            
+            // Mở item đầu tiên mặc định
+            if (faqItems.length > 0) {
+                faqItems[0].classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ECG Health Monitor</title>
+    <title>Giới Thiệu Đồ Án - ECG Health Monitor</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -11,213 +11,393 @@
         :root {
             --blue: #4A6FA5;
             --red: #E63946;
-            --light: #f4f6f8;
-            --dark: #333;
-            --white: #fff;
+            --light: rgba(255, 255, 255, 0.85);
+            --dark: #222;
+            --white: #ffffff;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: var(--light);
+            /* Sử dụng hình ảnh bạn cung cấp làm nền */
+            background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.9)),
+                        url('https://sv2.anhsieuviet.com/2025/12/25/kynguyen2.jpg') no-repeat center center fixed;
+            background-size: cover;
             color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         /* ===== HEADER ===== */
         header {
-            background: var(--white);
-            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 18px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
         }
 
         .nav-left h1 {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             color: var(--blue);
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
+
         .nav-right a {
-            margin-left: 10px;
+            margin-left: 15px;
             text-decoration: none;
-            color: white;
+            color: var(--white);
             background: var(--blue);
-            padding: 8px 14px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.9rem;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            border: 2px solid var(--blue);
         }
 
         .nav-right a:hover {
-            background: #3b5f8a;
-        }
-
-        /* ===== MAIN ===== */
-        main {
-            max-width: 900px;
-            margin: 50px auto;
             background: var(--white);
-            padding: 40px;
-            border-radius: 8px;
+            color: var(--blue);
         }
 
-        .title {
+        .nav-right a.active {
+            background: var(--red);
+            border-color: var(--red);
+        }
+        
+        /* ===== MAIN CONTENT ===== */
+        main {
+            max-width: 1000px;
+            width: 90%;
+            margin: 40px auto 60px;
+            background: var(--light);
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(5px);
+            flex-grow: 1;
+        }
+
+        /* ===== PHẦN TIÊU ĐỀ CHÍNH ===== */
+        .main-title {
             text-align: center;
             color: var(--blue);
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            font-size: 2.4rem;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--red);
+            display: inline-block;
+            margin-left: 50%;
+            transform: translateX(-50%);
         }
 
-        .topic {
+        .subtitle {
             text-align: center;
-            font-size: 1rem;
+            font-size: 1.05rem;
             line-height: 1.7;
-            font-weight: bold;
-            margin: 30px 0 45px;
+            color: #444;
+            margin-top: 25px;
+            font-weight: 500;
         }
 
-        /* ===== IMAGE ===== */
-        .image-box {
+        /* ===== LOGO TRƯỜNG & CHỦ ĐỀ ===== */
+        .logo-section {
             text-align: center;
-            margin: 20px 0;
+            margin: 35px 0;
         }
 
-        .image-box img {
-            max-width: 180px;
+        .logo-img {
+            max-width: 150px;
             height: auto;
+            margin-bottom: 25px;
         }
 
-        /* ===== SECTION ===== */
-        .section {
-            margin-top: 40px;
+        .project-topic {
+            background: linear-gradient(135deg, var(--blue), #2c4a7a);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            font-size: 1.15rem;
+            line-height: 1.8;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 20px;
+            box-shadow: 0 6px 15px rgba(74, 111, 165, 0.3);
+        }
+
+        /* ===== CÁC PHẦN THÔNG TIN (CARD) ===== */
+        .info-section {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 35px;
+            margin-top: 45px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid var(--red);
+        }
+
+        .section-title {
+            color: var(--blue);
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--red);
+        }
+
+        /* ===== GIẢNG VIÊN ===== */
+        .lecturer-info {
             text-align: center;
         }
 
-        .section h3 {
-            color: var(--blue);
+        .lecturer-info p {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .lecturer-img {
+            max-width: 180px;
+            border-radius: 10px;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ===== NHÓM SINH VIÊN ===== */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .member-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px 25px;
+            text-align: center;
+            border-top: 4px solid var(--blue);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .member-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .member-card i {
+            font-size: 2.8rem;
+            color: var(--red);
             margin-bottom: 15px;
         }
 
-        /* ===== TEAM ===== */
-        .team {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .member {
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .member i {
-            font-size: 2rem;
-            color: var(--red);
-            margin-bottom: 10px;
-        }
-
-        .member h4 {
+        .member-card h4 {
             color: var(--blue);
+            margin-bottom: 8px;
+            font-size: 1.4rem;
+        }
+
+        .member-card .mssv {
+            color: var(--red);
+            font-weight: bold;
+            font-size: 1.05rem;
             margin-bottom: 5px;
         }
 
-        /* ===== BUTTON ===== */
-        .center-btn {
+        .member-card .major {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
             margin-top: 50px;
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+
+        .footer-container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 35px 20px;
             text-align: center;
+            color: #555;
         }
 
-        .center-btn a {
-            text-decoration: none;
-            background: var(--red);
-            color: white;
-            padding: 12px 30px;
-            border-radius: 5px;
+        .footer-container h4 {
+            color: var(--blue);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .footer-container p {
+            margin: 8px 0;
+            line-height: 1.6;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .university-highlight {
             font-weight: bold;
+            color: var(--blue);
+            margin-top: 15px !important;
         }
 
-        .center-btn a:hover {
-            background: #c62828;
+        .footer-bottom {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: #777;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
         }
 
         /* ===== RESPONSIVE ===== */
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .nav-right {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+
+            .nav-right a {
+                margin: 0 8px;
+                padding: 8px 16px;
+            }
+
             main {
-                margin: 20px;
+                padding: 30px 25px;
+                width: 95%;
+                margin: 20px auto 40px;
+            }
+
+            .main-title {
+                font-size: 1.9rem;
+            }
+
+            .project-topic {
+                font-size: 1rem;
+                padding: 20px 15px;
+            }
+
+            .info-section {
                 padding: 25px;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-right a {
+                font-size: 0.85rem;
+                padding: 8px 12px;
+            }
+
+            .main-title {
+                font-size: 1.7rem;
             }
         }
     </style>
 </head>
 
 <body>
-
-<!-- ===== HEADER ===== -->
-<header>
-    <div class="nav-left">
-        <h1><i class="fas fa-heartbeat"></i> ECG Health Monitor</h1>
-    </div>
-    <div class="nav-right">
-        <a href="index.html">Trang Chủ</a>
-        <a href="Monitoring.html">Trang Theo Dõi</a>
-    </div>
-</header>
-
-<!-- ===== MAIN CONTENT ===== -->
-<main>
-    <h2 class="title">ĐỒ ÁN TỐT NGHIỆP</h2>
-
-    <div class="image-box">
-        <img src="https://sv2.anhsieuviet.com/2025/12/25/Logo_Utex.png" alt="Logo_Utex.png" border="0">
-    </div>
-
-    <div class="topic">
-        THIẾT KẾ THIẾT BỊ ĐO ĐIỆN TÂM ĐỒ, NHỊP TIM ĐEO QUANH NGỰC TÍCH HỢP CẢM BIẾN TÉ NGÃ,<br>
-        ỨNG DỤNG AI TRONG THEO DÕI SỨC KHỎE QUA ĐIỆN THOẠI THÔNG MINH<br>
-        CHO NGƯỜI MẮC BỆNH TIM MẠCH
-    </div>
-
-    <div class="section">
-        <h3>GIẢNG VIÊN HƯỚNG DẪN</h3>
-        <p><strong>TS. Nguyễn Văn Thái</strong></p>
-        <div class="image-box">
-            <img src="https://sv2.anhsieuviet.com/2025/12/25/TS.Nguyenvathai_.png" alt="TS.Nguyenvathai_.png" border="0">
+    <!-- ===== HEADER ===== -->
+    <header>
+        <div class="nav-left">
+            <h1><i class="fas fa-heartbeat"></i> ECG Health Monitor</h1>
         </div>
-    </div>
+        <div class="nav-right">
+            <a href="index.html"class="active">Trang Chủ</a>
+            <a href="Monitoring.html">Trang Theo Dõi</a>
+            <a href="Feature_ifo.html">Tính Năng</a>
+            <a href="Intruction.html">Hướng Dẫn</a>
+        </div>
+    </header>
 
-    <div class="section">
-        <h3>SINH VIÊN THỰC HIỆN</h3>
-        <div class="team">
-            <div class="member">
-                <i class="fas fa-user"></i>
-                <h4>Tạ Minh Thuận</h4>
-                <p>MSSV: 21151357</p>
-                <p>CNKT Điều khiển & Tự động hóa</p>
-            </div>
-
-            <div class="member">
-                <i class="fas fa-user"></i>
-                <h4>Lương Bùi Đức Duy</h4>
-                <p>MSSV: 21151204</p>
-                <p>CNKT Điều khiển & Tự động hóa</p>
+    <!-- ===== MAIN CONTENT ===== -->
+    <main>
+        <h1 class="main-title">ĐỒ ÁN TỐT NGHIỆP</h1>
+        <!-- Logo Trường & Chủ đề Đồ Án -->
+        <div class="logo-section">
+            <img src="https://sv2.anhsieuviet.com/2025/12/25/Logo_Utex.png" alt="Logo ĐH SPKT TP.HCM" class="logo-img">
+            <div class="project-topic">
+                THIẾT KẾ THIẾT BỊ ĐO ĐIỆN TÂM ĐỒ, NHỊP TIM ĐEO QUANH NGỰC TÍCH HỢP CẢM BIẾN TÉ NGÃ,
+                ỨNG DỤNG AI TRONG THEO DÕI SỨC KHỎE QUA ĐIỆN THOẠI THÔNG MINH
+                CHO NGƯỜI MẮC BỆNH TIM MẠCH
             </div>
         </div>
-    </div>
 
-    <div class="center-btn">
-        <a href="Monitoring.html">
-            <i class="fas fa-chart-line"></i> Vào Trang Giám Sát
-        </a>
-    </div>
-</main>
+        <!-- Thông tin Giảng viên -->
+        <section class="info-section">
+            <h2 class="section-title"><i class="fas fa-user-tie"></i> GIẢNG VIÊN HƯỚNG DẪN</h2>
+            <div class="lecturer-info">
+                <p><strong>TS. Nguyễn Văn Thái</strong></p>
+                <img src="https://sv2.anhsieuviet.com/2025/12/25/TS.Nguyenvathai_.png" alt="TS. Nguyễn Văn Thái" class="lecturer-img">
+            </div>
+        </section>
 
+        <!-- Thông tin Sinh viên thực hiện -->
+        <section class="info-section">
+            <h2 class="section-title"><i class="fas fa-users"></i> SINH VIÊN THỰC HIỆN</h2>
+            <div class="team-grid">
+                <div class="member-card">
+                    <i class="fas fa-user-graduate"></i>
+                    <h4>Tạ Minh Thuận</h4>
+                    <p class="mssv">MSSV: 21151357</p>
+                    <p class="major">Chuyên ngành: CNKT Điều khiển & Tự động hóa</p>
+                </div>
+
+                <div class="member-card">
+                    <i class="fas fa-user-graduate"></i>
+                    <h4>Lương Bùi Đức Duy</h4>
+                    <p class="mssv">MSSV: 21151204</p>
+                    <p class="major">Chuyên ngành: CNKT Điều khiển & Tự động hóa</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="footer-container">
+            <h4>ECG Health Monitor</h4>
+            <p>
+                Hệ thống đo điện tâm đồ & nhịp tim tích hợp cảm biến té ngã,
+                ứng dụng trí tuệ nhân tạo trong theo dõi và cảnh báo sức khỏe – một hướng nghiên cứu tiên phong
+                góp phần vào sự phát triển của y học chính xác[citation:1].
+            </p>
+            <p class="university-highlight">
+                Khoa Điện - Điện tử – Điều Khiển & Tự Động Hóa<br>
+                Trường Đại học Sư Phạm Kỹ Thuật Thành phố Hồ Chí Minh
+            </p>
+            <div class="footer-bottom">
+                © 2025 – Đồ án tốt nghiệp | Nhóm thực hiện
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính Năng - ECG Health Monitor</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --blue: #4A6FA5;
+            --red: #E63946;
+            --light: rgba(255, 255, 255, 0.85);
+            --dark: #222;
+            --white: #ffffff;
+            --green: #2A9D8F;
+            --purple: #9D4EDD;
+            --orange: #F4A261;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.9)),
+                        url('https://sv2.anhsieuviet.com/2025/12/25/kynguyen2.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .nav-left h1 {
+            font-size: 1.6rem;
+            color: var(--blue);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-right a {
+            margin-left: 15px;
+            text-decoration: none;
+            color: var(--white);
+            background: var(--blue);
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            border: 2px solid var(--blue);
+        }
+
+        .nav-right a:hover {
+            background: var(--white);
+            color: var(--blue);
+        }
+
+        .nav-right a.active {
+            background: var(--red);
+            border-color: var(--red);
+        }
+
+
+        /* ===== MAIN CONTENT ===== */
+        main {
+            max-width: 1200px;
+            width: 90%;
+            margin: 40px auto 60px;
+            background: var(--light);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(5px);
+            flex-grow: 1;
+        }
+
+        /* ===== PHẦN TIÊU ĐỀ CHÍNH ===== */
+        .main-title {
+            text-align: center;
+            color: var(--blue);
+            margin-bottom: 10px;
+            font-size: 2.4rem;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--red);
+            display: inline-block;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #444;
+            margin-top: 25px;
+            font-weight: 500;
+        }
+
+        /* ===== LOGO TRƯỜNG & CHỦ ĐỀ ===== */
+        .logo-section {
+            text-align: center;
+            margin: 35px 0;
+        }
+
+        .logo-img {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 25px;
+        }
+
+        .project-topic {
+            background: linear-gradient(135deg, var(--blue), #2c4a7a);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            font-size: 1.15rem;
+            line-height: 1.8;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 20px;
+            box-shadow: 0 6px 15px rgba(74, 111, 165, 0.3);
+        }
+
+        /* ===== GIỚI THIỆU TÍNH NĂNG ===== */
+        .feature-intro {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9ff, #eef2ff);
+            border-radius: 12px;
+            border-left: 5px solid var(--green);
+        }
+
+        .feature-intro h2 {
+            color: var(--blue);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .feature-intro p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #444;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* ===== GRID TÍNH NĂNG NỔI BẬT ===== */
+        .features-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-top: 5px solid var(--blue);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card.orange {
+            border-top-color: var(--orange);
+        }
+
+        .feature-card.green {
+            border-top-color: var(--green);
+        }
+
+        .feature-card.purple {
+            border-top-color: var(--purple);
+        }
+
+        .feature-card.red {
+            border-top-color: var(--red);
+        }
+
+        .feature-icon {
+            background: linear-gradient(135deg, var(--blue), #2c4a7a);
+            color: white;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .feature-card.orange .feature-icon {
+            background: linear-gradient(135deg, var(--orange), #E76F51);
+        }
+
+        .feature-card.green .feature-icon {
+            background: linear-gradient(135deg, var(--green), #1A936F);
+        }
+
+        .feature-card.purple .feature-icon {
+            background: linear-gradient(135deg, var(--purple), #7B2CBF);
+        }
+
+        .feature-card.red .feature-icon {
+            background: linear-gradient(135deg, var(--red), #D00000);
+        }
+
+        .feature-content {
+            padding: 25px;
+        }
+
+        .feature-content h3 {
+            color: var(--blue);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-card.orange .feature-content h3 {
+            color: var(--orange);
+        }
+
+        .feature-card.green .feature-content h3 {
+            color: var(--green);
+        }
+
+        .feature-card.purple .feature-content h3 {
+            color: var(--purple);
+        }
+
+        .feature-card.red .feature-content h3 {
+            color: var(--red);
+        }
+
+        .feature-content p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-list i {
+            color: var(--green);
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* ===== PHẦN TÍCH HỢP AI ===== */
+        .ai-section {
+            background: linear-gradient(135deg, #1a2a4a, #2c3e50);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 50px 0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .ai-section h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: #fff;
+        }
+
+        .ai-section h2 i {
+            color: #00d4ff;
+            margin-right: 15px;
+        }
+
+        .ai-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .ai-feature {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .ai-feature:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .ai-feature i {
+            font-size: 2.5rem;
+            color: #00d4ff;
+            margin-bottom: 15px;
+        }
+
+        .ai-feature h4 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .ai-feature p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        /* ===== LỢI ÍCH HỆ THỐNG ===== */
+        .benefits-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 50px 0;
+            border-left: 5px solid var(--green);
+        }
+
+        .benefits-section h2 {
+            color: var(--blue);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .benefit-icon {
+            background: var(--blue);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .benefit-content h4 {
+            color: var(--blue);
+            margin-bottom: 8px;
+        }
+
+        .benefit-content p {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+
+        .footer-container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 35px 20px;
+            text-align: center;
+            color: #555;
+        }
+
+        .footer-container h4 {
+            color: var(--blue);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .footer-container p {
+            margin: 8px 0;
+            line-height: 1.6;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .university-highlight {
+            font-weight: bold;
+            color: var(--blue);
+            margin-top: 15px !important;
+        }
+
+        .footer-bottom {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: #777;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .nav-right {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .nav-right a {
+                margin: 5px;
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            main {
+                padding: 25px;
+                width: 95%;
+                margin: 20px auto 40px;
+            }
+
+            .main-title {
+                font-size: 1.9rem;
+            }
+
+            .features-container {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-intro,
+            .ai-section,
+            .benefits-section {
+                padding: 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 1.7rem;
+            }
+            
+            .feature-content h3 {
+                font-size: 1.2rem;
+                min-height: auto;
+            }
+            
+            .ai-features,
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ===== HEADER ===== -->
+    <header>
+        <div class="nav-left">
+            <h1><i class="fas fa-heartbeat"></i> ECG Health Monitor</h1>
+        </div>
+        <div class="nav-right">
+            <a href="index.html">Trang Chủ</a>
+            <a href="Monitoring.html">Trang Theo Dõi</a>
+            <a href="Feature_ifo.html" class="active">Tính Năng</a>
+            <a href="Intruction.html">Hướng Dẫn</a>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main>
+        <h1 class="main-title">Tính Năng Nổi Bật</h1>
+        
+        <!-- Logo Trường & Chủ đề Đồ Án -->
+        <div class="logo-section">
+            <img src="https://sv2.anhsieuviet.com/2025/12/25/Logo_Utex.png" alt="Logo ĐH SPKT TP.HCM" class="logo-img">
+            <div class="project-topic">
+                THIẾT KẾ THIẾT BỊ ĐO ĐIỆN TÂM ĐỒ, NHỊP TIM ĐEO QUANH NGỰC TÍCH HỢP CẢM BIẾN TÉ NGÃ,
+                ỨNG DỤNG AI TRONG THEO DÕI SỨC KHỎE QUA ĐIỆN THOẠI THÔNG MINH
+                CHO NGƯỜI MẮC BỆNH TIM MẠCH
+            </div>
+        </div>
+
+        <!-- Giới thiệu tính năng -->
+        <div class="feature-intro">
+            <h2> Hệ Thống Giám Sát Sức Khỏe Toàn Diện</h2>
+            <p>
+                ECG Health Monitor là giải pháp công nghệ tiên tiến kết hợp phần cứng thông minh và phần mềm phân tích AI 
+                để cung cấp hệ thống theo dõi sức khỏe tim mạch 24/7. Hệ thống được thiết kế đặc biệt cho bệnh nhân tim mạch 
+                với các tính năng ưu việt giúp phát hiện sớm và cảnh báo kịp thời các vấn đề sức khỏe.
+            </p>
+        </div>
+
+        <!-- Các tính năng chính -->
+        <div class="features-container">
+            <!-- Tính năng 1 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Đo Điện Tâm Đồ (ECG) & Nhịp Tim Chính Xác</h3>
+                    <p>Theo dõi liên tục các thông số quan trọng của tim với độ chính xác cao:</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check-circle"></i> Đo ECG 3 đạo trình tiêu chuẩn</li>
+                        <li><i class="fas fa-check-circle"></i> Theo dõi nhịp tim liên tục 24/7</li>
+                        <li><i class="fas fa-check-circle"></i> Phát hiện rối loạn nhịp tim</li>
+                        <li><i class="fas fa-check-circle"></i> Ghi lại dữ liệu ECG theo thời gian thực</li>
+                        <li><i class="fas fa-check-circle"></i> Cảnh báo khi nhịp tim vượt ngưỡng an toàn</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tính năng 2 -->
+            <div class="feature-card orange">
+                <div class="feature-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Phát Hiện Té Ngã & Cảnh Báo Khẩn Cấp</h3>
+                    <p>Hệ thống cảm biến thông minh phát hiện té ngã và kích hoạt cảnh báo:</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check-circle"></i> Cảm biến gia tốc 3 trục nhạy bén tiết kiệm năng lượng</li>
+                        <li><i class="fas fa-check-circle"></i> Thuật toán phát hiện té ngã chính xác </li>
+     
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tính năng 3 -->
+            <div class="feature-card green">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Ứng Dụng Di Động Thông Minh</h3>
+                    <p>Theo dõi sức khỏe mọi lúc mọi nơi qua điện thoại thông minh:</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check-circle"></i> Hiển thị dữ liệu thời gian thực</li>
+                        <li><i class="fas fa-check-circle"></i> Lưu trữ lịch sử sức khỏe 365 ngày</li>
+                        <li><i class="fas fa-check-circle"></i> Báo cáo sức khỏe hàng tuần/tháng</li>
+                        <li><i class="fas fa-check-circle"></i> Chia sẻ dữ liệu với bác sĩ điều trị</li>
+                        <li><i class="fas fa-check-circle"></i> Giao diện thân thiện, dễ sử dụng</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tính năng 4 -->
+            <div class="feature-card purple">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="feature-content">
+                    <h3>Phân Tích Dữ Liệu & Báo Cáo</h3>
+                    <p>Hệ thống phân tích dữ liệu sức khỏe nâng cao:</p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check-circle"></i> Phân tích xu hướng sức khỏe theo thời gian</li>
+                        <li><i class="fas fa-check-circle"></i> Phát hiện bất thường tự động</li>
+                        <li><i class="fas fa-check-circle"></i> Báo cáo chi tiết định kỳ</li>
+                        <li><i class="fas fa-check-circle"></i> Xuất dữ liệu định dạng PDF/Excel</li>
+                        <li><i class="fas fa-check-circle"></i> So sánh với chỉ số sức khỏe tiêu chuẩn</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phần tích hợp AI -->
+        <div class="ai-section">
+            <h2><i class="fas fa-robot"></i> Công Nghệ Trí Tuệ Nhân Tạo (AI)</h2>
+            <p style="text-align: center; margin-bottom: 30px; font-size: 1.1rem; opacity: 0.9;">
+                Hệ thống ứng dụng các thuật toán AI tiên tiến trong phân tích và dự đoán sức khỏe tim mạch
+            </p>
+            
+            <div class="ai-features">
+                <div class="ai-feature">
+                    <i class="fas fa-brain"></i>
+                    <h4>Phát Hiện Bất Thường ECG</h4>
+                    <p>Mô hình deep learning nhận diện các dạng bất thường trên tín hiệu ECG</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Lợi ích hệ thống -->
+        <div class="benefits-section">
+            <h2><i class="fas fa-award"></i> Lợi Ích Của Hệ Thống</h2>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="benefit-content">
+                        <h4>An Toàn Tối Ưu</h4>
+                        <p>Giám sát 24/7 giúp phát hiện sớm các vấn đề sức khỏe, giảm thiểu rủi ro cho bệnh nhân</p>
+                    </div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="benefit-content">
+                        <h4>Theo Dõi Liên Tục</h4>
+                        <p>Ghi nhận và lưu trữ toàn bộ dữ liệu sức khỏe, tạo cơ sở cho điều trị hiệu quả</p>
+                    </div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="benefit-content">
+                        <h4>Phản Hồi Nhanh</h4>
+                        <p>Tự động cảnh báo khẩn cấp giúp xử lý kịp thời các tình huống nguy hiểm</p>
+                    </div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <div class="benefit-content">
+                        <h4>Kết Nối Gia Đình</h4>
+                        <p>Cho phép người thân theo dõi sức khỏe bệnh nhân từ xa, an tâm hơn</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="footer-container">
+            <h4>ECG Health Monitor</h4>
+            <p>
+                Hệ thống đo điện tâm đồ & nhịp tim tích hợp cảm biến té ngã,
+                ứng dụng trí tuệ nhân tạo trong theo dõi và cảnh báo sức khỏe – một hướng nghiên cứu tiên phong
+                góp phần vào sự phát triển của y học chính xác.
+            </p>
+            <p class="university-highlight">
+                Khoa Điện - Điện tử – Điều Khiển & Tự Động Hóa<br>
+                Trường Đại học Sư Phạm Kỹ Thuật Thành phố Hồ Chí Minh
+            </p>
+            <div class="footer-bottom">
+                © 2025 – Đồ án tốt nghiệp | Nhóm thực hiện
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
