@@ -101,7 +101,7 @@
             margin: 40px auto;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto auto auto 1fr;
+            grid-template-rows: auto auto auto auto 1fr;
             gap: 20px;
             flex-grow: 1;
         }
@@ -161,10 +161,99 @@
             100% { box-shadow: 0 0 0 0 rgba(42, 193, 69, 0); }
         }
 
+        /* ===== ELECTRODE WARNING BANNER ===== */
+        .electrode-warning {
+            grid-column: 1 / -1;
+            grid-row: 2;
+            background: var(--gradient-warning);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 5px 20px rgba(255, 152, 0, 0.3);
+            animation: warning-bounce 2s infinite;
+            display: none; /* Ẩn mặc định, hiện khi có cảnh báo */
+        }
+
+        @keyframes warning-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .electrode-warning.error {
+            background: var(--gradient-danger);
+            box-shadow: 0 5px 20px rgba(229, 57, 53, 0.3);
+            animation: error-bounce 1.5s infinite;
+        }
+
+        @keyframes error-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .warning-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .warning-icon {
+            font-size: 1.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .warning-text {
+            flex: 1;
+        }
+
+        .warning-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .warning-description {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .warning-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .warning-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .warning-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
         /* Control Panel */
         .control-panel {
             grid-column: 1;
-            grid-row: 2;
+            grid-row: 3;
             background: white;
             border-radius: 15px;
             padding: 20px;
@@ -275,7 +364,7 @@
         /* Vital Stats */
         .vital-stats {
             grid-column: 2;
-            grid-row: 2;
+            grid-row: 3;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(2, 1fr);
@@ -363,7 +452,7 @@
         /* Heart Rate Summary */
         .hr-summary {
             grid-column: 1 / -1;
-            grid-row: 3;
+            grid-row: 4;
             background: white;
             border-radius: 15px;
             padding: 20px;
@@ -413,7 +502,7 @@
         /* ECG Chart */
         .ecg-chart-container {
             grid-column: 1 / -1;
-            grid-row: 4;
+            grid-row: 5;
             background: var(--gradient-primary);
             border-radius: 15px;
             padding: 20px;
@@ -599,17 +688,24 @@
         @media (max-width: 1200px) {
             .dashboard-container {
                 grid-template-columns: 1fr;
-                grid-template-rows: auto auto auto auto;
+                grid-template-rows: auto auto auto auto auto;
             }
-            .vital-stats {
+            .electrode-warning {
+                grid-row: 2;
+            }
+            .control-panel {
                 grid-column: 1;
                 grid-row: 3;
             }
-            .hr-summary {
+            .vital-stats {
+                grid-column: 1;
                 grid-row: 4;
             }
-            .ecg-chart-container {
+            .hr-summary {
                 grid-row: 5;
+            }
+            .ecg-chart-container {
+                grid-row: 6;
                 min-height: 400px;
             }
         }
@@ -637,11 +733,22 @@
                 margin: 5px;
                 padding: 8px 16px;
             }
+            
+            .electrode-warning {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .warning-actions {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         @media (max-width: 768px) {
             .dashboard-container {
-                grid-template-rows: auto auto auto auto;
+                grid-template-rows: auto auto auto auto auto;
                 gap: 15px;
                 width: 98%;
                 margin: 20px auto;
@@ -670,6 +777,20 @@
             .ecg-chart-container {
                 min-height: 350px;
             }
+            
+            .warning-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .warning-title {
+                font-size: 1.1rem;
+            }
+            
+            .warning-description {
+                font-size: 0.9rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -679,6 +800,9 @@
             }
             .dashboard-header {
                 padding: 15px 20px;
+            }
+            .electrode-warning {
+                padding: 12px 15px;
             }
             .control-panel, .vital-stats, .hr-summary, .ecg-chart-container {
                 padding: 15px;
@@ -701,6 +825,11 @@
             
             .nav-left h1 {
                 font-size: 1.4rem;
+            }
+            
+            .warning-btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -729,6 +858,29 @@
                     <div class="pulse-dot"></div>
                     <span id="connectionStatusText">Ready to Connect</span>
                 </div>
+            </div>
+        </div>
+
+        <!-- Electrode Warning Banner (Hiển thị khi phát hiện điện cực chưa vào da) -->
+        <div class="electrode-warning" id="electrodeWarning">
+            <div class="warning-content">
+                <div class="warning-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="warning-text">
+                    <div class="warning-title" id="warningTitle">ELECTRODE CONNECTION ISSUE DETECTED</div>
+                    <div class="warning-description" id="warningDescription">
+                        Electrodes are not properly attached to the skin. Please check all electrode connections.
+                    </div>
+                </div>
+            </div>
+            <div class="warning-actions">
+                <button class="warning-btn" id="dismissWarningBtn">
+                    <i class="fas fa-times"></i> Dismiss
+                </button>
+                <button class="warning-btn" id="helpWarningBtn">
+                    <i class="fas fa-question-circle"></i> Help
+                </button>
             </div>
         </div>
 
@@ -923,6 +1075,12 @@
         // Constants
         const SERVICE_UUID = '00000259-0000-1000-8000-00805f9b34fb';
         const CHAR_UUID = '00002a37-0000-1000-8000-00805f9b34fb';
+        
+        // Electrode detection constants
+        const ELECTRODE_ERROR_HR = 0;
+        const ELECTRODE_ERROR_RR = 0;
+        const ELECTRODE_ERROR_ECG = -2553;
+        const MIN_ECG_SAMPLES_FOR_DETECTION = 10; // Số lượng mẫu ECG cần kiểm tra
 
         // Global variables
         let device = null;
@@ -961,6 +1119,12 @@
         let maxValue = -Infinity;
         let dataRange = 0;
         let currentScale = 0.0008;
+        
+        // Electrode warning variables
+        let electrodeWarningActive = false;
+        let electrodeWarningCount = 0;
+        const ELECTRODE_WARNING_THRESHOLD = 3; // Cần 3 lần liên tiếp để kích hoạt cảnh báo
+        let electrodeWarningTimeout = null;
 
         // DOM Elements
         const scanBtn = document.getElementById('scanBtn');
@@ -990,6 +1154,13 @@
         const maxRr = document.getElementById('maxRr');
         const minRr = document.getElementById('minRr');
         const avgRr = document.getElementById('avgRr');
+        
+        // Electrode warning elements
+        const electrodeWarning = document.getElementById('electrodeWarning');
+        const warningTitle = document.getElementById('warningTitle');
+        const warningDescription = document.getElementById('warningDescription');
+        const dismissWarningBtn = document.getElementById('dismissWarningBtn');
+        const helpWarningBtn = document.getElementById('helpWarningBtn');
         
         // Initialize Canvas with proper resize handling
         function initCanvas() {
@@ -1211,6 +1382,90 @@
             return Math.max(minScale, Math.min(maxScale, calculatedScale));
         }
         
+        // ===== ELECTRODE DETECTION FUNCTIONS =====
+        
+        // Check if electrode is not attached to skin
+        function checkElectrodeAttachment(parsedData) {
+            if (!parsedData) return false;
+            
+            // Kiểm tra HR và RR
+            if (parsedData.heartRate !== ELECTRODE_ERROR_HR || parsedData.rrInterval !== ELECTRODE_ERROR_RR) {
+                return false;
+            }
+            
+            // Kiểm tra ECG samples
+            const samplesToCheck = Math.min(parsedData.ecgSamples.length, MIN_ECG_SAMPLES_FOR_DETECTION);
+            let allSamplesMatch = true;
+            
+            for (let i = 0; i < samplesToCheck; i++) {
+                if (parsedData.ecgSamples[i] !== ELECTRODE_ERROR_ECG) {
+                    allSamplesMatch = false;
+                    break;
+                }
+            }
+            
+            return allSamplesMatch;
+        }
+        
+        // Show electrode warning
+        function showElectrodeWarning() {
+            if (electrodeWarningActive) return;
+            
+            electrodeWarningActive = true;
+            electrodeWarning.style.display = 'flex';
+            electrodeWarning.classList.add('error');
+            
+            // Cập nhật nội dung cảnh báo
+            warningTitle.textContent = 'ELECTRODE NOT ATTACHED TO SKIN';
+            warningDescription.textContent = 'HR=0, RR=0, ECG=-2553 detected. Please attach electrodes to skin for accurate measurements.';
+            
+            // Phát âm thanh cảnh báo (tùy chọn)
+            playWarningSound();
+            
+            // Log cảnh báo
+            console.warn('Electrode warning triggered: HR=0, RR=0, ECG=-2553');
+        }
+        
+        // Hide electrode warning
+        function hideElectrodeWarning() {
+            if (!electrodeWarningActive) return;
+            
+            electrodeWarningActive = false;
+            electrodeWarning.style.display = 'none';
+            electrodeWarning.classList.remove('error');
+            electrodeWarningCount = 0;
+            
+            // Clear any existing timeout
+            if (electrodeWarningTimeout) {
+                clearTimeout(electrodeWarningTimeout);
+                electrodeWarningTimeout = null;
+            }
+        }
+        
+        // Play warning sound
+        function playWarningSound() {
+            try {
+                // Tạo âm thanh cảnh báo đơn giản
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (error) {
+                console.warn('Could not play warning sound:', error);
+            }
+        }
+        
         // Update heart rate statistics
         function updateHRStatistics(hr, rr) {
             // Add new values to arrays
@@ -1369,6 +1624,35 @@
         function processECGPacket(parsedData) {
             if (!parsedData || isPaused) return;
             
+            // ===== ELECTRODE DETECTION =====
+            // Kiểm tra nếu dữ liệu phù hợp với điện cực chưa vào da
+            if (checkElectrodeAttachment(parsedData)) {
+                electrodeWarningCount++;
+                
+                // Nếu đủ số lần liên tiếp, hiển thị cảnh báo
+                if (electrodeWarningCount >= ELECTRODE_WARNING_THRESHOLD && !electrodeWarningActive) {
+                    showElectrodeWarning();
+                }
+                
+                // Reset timeout nếu có
+                if (electrodeWarningTimeout) {
+                    clearTimeout(electrodeWarningTimeout);
+                }
+                
+                // Đặt timeout để tự động ẩn cảnh báo nếu dữ liệu trở lại bình thường
+                electrodeWarningTimeout = setTimeout(() => {
+                    if (electrodeWarningActive) {
+                        hideElectrodeWarning();
+                    }
+                }, 10000); // 10 giây
+            } else {
+                // Nếu dữ liệu bình thường, reset counter và ẩn cảnh báo
+                electrodeWarningCount = 0;
+                if (electrodeWarningActive) {
+                    hideElectrodeWarning();
+                }
+            }
+            
             // Update statistics
             updateHRStatistics(parsedData.heartRate, parsedData.rrInterval);
             
@@ -1510,6 +1794,9 @@
                         cancelAnimationFrame(animationFrameId);
                         animationFrameId = null;
                     }
+                    
+                    // Hide electrode warning
+                    hideElectrodeWarning();
                 });
                 
                 // Connect to GATT server
@@ -1540,6 +1827,10 @@
                 
                 // Reset statistics for new session
                 resetStatistics();
+                
+                // Reset electrode warning
+                electrodeWarningCount = 0;
+                hideElectrodeWarning();
                 
                 // Update UI
                 scanBtn.disabled = true;
@@ -1576,6 +1867,9 @@
                 cancelAnimationFrame(animationFrameId);
                 animationFrameId = null;
             }
+            
+            // Hide electrode warning
+            hideElectrodeWarning();
         };
         
         // Clear chart
@@ -1658,6 +1952,15 @@
             updateBatteryDisplay(0);
             resetStatistics();
             
+            // Set up warning button handlers
+            dismissWarningBtn.onclick = () => {
+                hideElectrodeWarning();
+            };
+            
+            helpWarningBtn.onclick = () => {
+                alert('Electrode Connection Help:\n\n1. Clean the skin area with alcohol\n2. Apply electrode gel if available\n3. Firmly attach all electrodes to skin\n4. Ensure good contact with no air gaps\n5. Check electrode cables are connected properly');
+            };
+            
             // Check for Web Bluetooth API support
             if (!navigator.bluetooth) {
                 alert('Web Bluetooth API is not supported in this browser. Please use Chrome/Edge on desktop or Android.');
@@ -1669,6 +1972,11 @@
             setTimeout(() => {
                 forceResizeCanvas();
             }, 500);
+            
+            // Test electrode warning (for demo purposes - remove in production)
+            // setTimeout(() => {
+            //     showElectrodeWarning();
+            // }, 3000);
         };
         
         // Clean up on page unload
@@ -1678,6 +1986,9 @@
             }
             if (resizeTimeout) {
                 clearTimeout(resizeTimeout);
+            }
+            if (electrodeWarningTimeout) {
+                clearTimeout(electrodeWarningTimeout);
             }
             if (device && device.gatt.connected) {
                 device.gatt.disconnect();
