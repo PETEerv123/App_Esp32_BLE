@@ -982,11 +982,11 @@
 
         <!-- Heart Rate Summary -->
         <section class="hr-summary">
-            <div class="summary-card">
+            <!-- <div class="summary-card">
                 <div class="summary-title">Current HR</div>
                 <div class="summary-value hr-current" id="currentHr">--</div>
                 <div class="summary-unit">bpm</div>
-            </div>
+            </div> -->
             <div class="summary-card">
                 <div class="summary-title">Max HR</div>
                 <div class="summary-value hr-max" id="maxHr">--</div>
@@ -1002,11 +1002,11 @@
                 <div class="summary-value hr-avg" id="avgHr">--</div>
                 <div class="summary-unit">bpm</div>
             </div>
-            <div class="summary-card">
+            <!-- <div class="summary-card">
                 <div class="summary-title">Current RR</div>
                 <div class="summary-value rr-current" id="currentRr">--</div>
                 <div class="summary-unit">ms</div>
-            </div>
+            </div> -->
             <div class="summary-card">
                 <div class="summary-title">Max RR</div>
                 <div class="summary-value rr-max" id="maxRr">--</div>
@@ -1146,11 +1146,11 @@
         const hrMin = document.getElementById('hrMin');
         const rrMax = document.getElementById('rrMax');
         const rrMin = document.getElementById('rrMin');
-        const currentHr = document.getElementById('currentHr');
+        // const currentHr = document.getElementById('currentHr');
         const maxHr = document.getElementById('maxHr');
         const minHr = document.getElementById('minHr');
         const avgHr = document.getElementById('avgHr');
-        const currentRr = document.getElementById('currentRr');
+        // const currentRr = document.getElementById('currentRr');
         const maxRr = document.getElementById('maxRr');
         const minRr = document.getElementById('minRr');
         const avgRr = document.getElementById('avgRr');
@@ -1417,7 +1417,7 @@
             
             // Cập nhật nội dung cảnh báo
             warningTitle.textContent = 'ELECTRODE NOT ATTACHED TO SKIN';
-            warningDescription.textContent = 'Please attach electrodes to skin for accurate measurements.';
+            warningDescription.textContent = 'HR=0, RR=0, ECG=-2553 detected. Please attach electrodes to skin for accurate measurements.';
             
             // Phát âm thanh cảnh báo (tùy chọn)
             playWarningSound();
@@ -1490,27 +1490,25 @@
                 avgRR = Math.round(rrValues.reduce((a, b) => a + b, 0) / rrValues.length);
                 
                 // Update all displays
-                updateHRDisplays(hr, rr);
+                updateHRDisplays();
             }
         }
         
         // Update all HR/RR displays
-        function updateHRDisplays(currentHR, currentRR) {
+        function updateHRDisplays() {
             // Update main vital stats
-            hrValue.textContent = currentHR;
-            rrValue.textContent = currentRR;
+
             hrMax.textContent = maxHR;
             hrMin.textContent = minHR;
             rrMax.textContent = maxRR;
             rrMin.textContent = minRR;
             
             // Update summary section
-            currentHr.textContent = currentHR;
+
             maxHr.textContent = maxHR;
             minHr.textContent = minHR;
             avgHr.textContent = avgHR;
-            
-            currentRr.textContent = currentRR;
+
             maxRr.textContent = maxRR;
             minRr.textContent = minRR;
             avgRr.textContent = avgRR;
@@ -1533,11 +1531,11 @@
             hrMin.textContent = '--';
             rrMax.textContent = '--';
             rrMin.textContent = '--';
-            currentHr.textContent = '--';
+
             maxHr.textContent = '--';
             minHr.textContent = '--';
             avgHr.textContent = '--';
-            currentRr.textContent = '--';
+
             maxRr.textContent = '--';
             minRr.textContent = '--';
             avgRr.textContent = '--';
@@ -1997,4 +1995,3 @@
     </script>
 </body>
 </html>
-
