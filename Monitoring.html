@@ -1146,11 +1146,11 @@
         const hrMin = document.getElementById('hrMin');
         const rrMax = document.getElementById('rrMax');
         const rrMin = document.getElementById('rrMin');
-        // const currentHr = document.getElementById('currentHr');
+        const currentHr = document.getElementById('currentHr');
         const maxHr = document.getElementById('maxHr');
         const minHr = document.getElementById('minHr');
         const avgHr = document.getElementById('avgHr');
-        // const currentRr = document.getElementById('currentRr');
+        const currentRr = document.getElementById('currentRr');
         const maxRr = document.getElementById('maxRr');
         const minRr = document.getElementById('minRr');
         const avgRr = document.getElementById('avgRr');
@@ -1417,7 +1417,7 @@
             
             // Cập nhật nội dung cảnh báo
             warningTitle.textContent = 'ELECTRODE NOT ATTACHED TO SKIN';
-            warningDescription.textContent = 'HR=0, RR=0, ECG=-2553 detected. Please attach electrodes to skin for accurate measurements.';
+            warningDescription.textContent = 'Please attach electrodes to skin for accurate measurements.';
             
             // Phát âm thanh cảnh báo (tùy chọn)
             playWarningSound();
@@ -1650,7 +1650,8 @@
                     hideElectrodeWarning();
                 }
             }
-            
+            hrValue.textContent = parsedData.heartRate;
+            rrValue.textContent = parsedData.rrInterval;
             // Update statistics
             updateHRStatistics(parsedData.heartRate, parsedData.rrInterval);
             
