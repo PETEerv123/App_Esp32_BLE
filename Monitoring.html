@@ -361,14 +361,37 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
-        /* Vital Stats */
+        /* Vital Stats - ĐÃ SỬA LẠI */
         .vital-stats {
             grid-column: 2;
             grid-row: 3;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(2, 1fr);
+            grid-template-columns: 1fr; /* Chỉ 1 cột */
+            grid-template-rows: 1fr 1fr; /* 2 hàng */
             gap: 12px;
+            height: 100%;
+        }
+
+        /* Ô Heart Rate chiếm toàn bộ hàng trên */
+        .vital-stats .stat-card:first-child {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        /* Container cho 2 ô dưới */
+        .vital-stats .stats-bottom-row {
+            grid-column: 1;
+            grid-row: 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 cột bằng nhau */
+            gap: 12px;
+            height: 100%;
+        }
+
+        /* Các ô trong hàng dưới */
+        .vital-stats .stats-bottom-row .stat-card {
+            margin: 0;
+            height: 100%; /* Đảm bảo chiều cao bằng nhau */
         }
 
         .stat-card {
@@ -458,7 +481,7 @@
             padding: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 15px;
         }
 
@@ -700,7 +723,28 @@
             .vital-stats {
                 grid-column: 1;
                 grid-row: 4;
+                grid-template-columns: 1fr; /* Trên mobile, xếp dọc */
+                grid-template-rows: auto; /* Tự động điều chỉnh chiều cao */
             }
+            
+            /* Trên mobile, xóa grid bên trong và để các ô xếp dọc */
+            .vital-stats .stats-bottom-row {
+                grid-column: 1;
+                grid-row: auto;
+                display: flex;
+                flex-direction: column;
+                grid-template-columns: 1fr; /* Chuyển về 1 cột */
+                gap: 12px;
+            }
+            
+            /* Trên mobile, các stat-card đều chiếm toàn chiều rộng */
+            .vital-stats .stat-card,
+            .vital-stats .stats-bottom-row .stat-card {
+                grid-column: 1 !important;
+                grid-row: auto !important;
+                width: 100%;
+            }
+            
             .hr-summary {
                 grid-row: 5;
             }
@@ -708,14 +752,14 @@
                 grid-row: 6;
                 min-height: 400px;
             }
-        }
-
-        @media (max-width: 992px) {
+            
             .hr-summary {
                 grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: repeat(2, 1fr);
+                grid-template-rows: repeat(3, 1fr);
             }
-            
+        }
+
+        @media (max-width: 992px) {            
             header {
                 flex-direction: column;
                 gap: 15px;
@@ -753,13 +797,19 @@
                 width: 98%;
                 margin: 20px auto;
             }
+            
             .vital-stats {
                 grid-template-columns: 1fr;
-                grid-template-rows: auto;
             }
+            
+            .vital-stats .stats-bottom-row {
+                grid-template-columns: 1fr;
+            }
+            
             .hr-summary {
                 grid-template-columns: 1fr;
             }
+            
             .connection-buttons {
                 flex-direction: column;
             }
@@ -924,8 +974,9 @@
             </div>
         </section>
 
-        <!-- Vital Stats -->
+        <!-- Vital Stats - ĐÃ SỬA LẠI -->
         <section class="vital-stats">
+            <!-- Ô Heart Rate ở trên -->
             <div class="stat-card">
                 <div class="stat-icon hr-icon">
                     <i class="fas fa-heart"></i>
@@ -944,39 +995,36 @@
                     </div>
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon rr-icon">
-                    <i class="fas fa-wave-square"></i>
-                </div>
-                <div class="stat-label">RR Interval</div>
-                <div class="stat-value rr-value" id="rrValue">--</div>
-                <div class="stat-unit">ms</div>
-                <div class="stat-minmax">
-                    <div class="minmax-item">
-                        <div class="minmax-label">Max</div>
-                        <div class="minmax-value" id="rrMax">--</div>
+            
+            <!-- 2 ô dưới trong container -->
+            <div class="stats-bottom-row">
+                <div class="stat-card">
+                    <div class="stat-icon rr-icon">
+                        <i class="fas fa-wave-square"></i>
                     </div>
-                    <div class="minmax-item">
-                        <div class="minmax-label">Min</div>
-                        <div class="minmax-value" id="rrMin">--</div>
+                    <div class="stat-label">RR Interval</div>
+                    <div class="stat-value rr-value" id="rrValue">--</div>
+                    <div class="stat-unit">ms</div>
+                    <div class="stat-minmax">
+                        <div class="minmax-item">
+                            <div class="minmax-label">Max</div>
+                            <div class="minmax-value" id="rrMax">--</div>
+                        </div>
+                        <div class="minmax-item">
+                            <div class="minmax-label">Min</div>
+                            <div class="minmax-value" id="rrMin">--</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- <div class="stat-card">
-                <div class="stat-icon bat-icon">
-                    <i class="fas fa-battery-full"></i>
+                
+                <div class="stat-card">
+                    <div class="stat-icon accel-icon">
+                        <i class="fas fa-running"></i>
+                    </div>
+                    <div class="stat-label">Fall Detected</div>
+                    <div class="stat-value accel-value" id="accelValue">--</div>
+                    <div class="stat-unit">G-force</div>
                 </div>
-                <div class="stat-label">Battery</div>
-                <div class="stat-value bat-value" id="batValue">--</div>
-                <div class="stat-unit">% remaining</div>
-            </div> -->
-            <div class="stat-card">
-                <div class="stat-icon accel-icon">
-                    <i class="fas fa-running"></i>
-                </div>
-                <div class="stat-label">Fall Detetected</div>
-                <div class="stat-value accel-value" id="accelValue">--</div>
-                <div class="stat-unit">G-force</div>
             </div>
         </section>
 
@@ -1516,7 +1564,8 @@
             avgRR = 0;
             
             // Reset all displays
-            updateHRDisplays('--', '--');
+            hrValue.textContent = '--';
+            rrValue.textContent = '--';
             hrMax.textContent = '--';
             hrMin.textContent = '--';
             rrMax.textContent = '--';
@@ -1543,7 +1592,6 @@
         // Update battery display
         function updateBatteryDisplay(batteryLevelValue) {
             const batteryPercentValue = Math.min(Math.max(batteryLevelValue, 0), 100);
-            batValue.textContent = batteryPercentValue;
             batteryPercent.textContent = `${batteryPercentValue}%`;
             
             // Update battery indicator
@@ -1961,11 +2009,6 @@
             setTimeout(() => {
                 forceResizeCanvas();
             }, 500);
-            
-            // Test electrode warning (for demo purposes - remove in production)
-            // setTimeout(() => {
-            //     showElectrodeWarning();
-            // }, 3000);
         };
         
         // Clean up on page unload
